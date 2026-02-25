@@ -1,32 +1,33 @@
 package com.bna.gac.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
-@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idRole;
 
-    @Column(unique = true, nullable = false)
     private String name;
+    private String description;
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
-            name = "roles_permissions",
+            name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )

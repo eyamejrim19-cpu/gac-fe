@@ -1,24 +1,26 @@
 package com.bna.gac.entities;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Permission {
+public class Garantie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPermission;
+    private Long idGarantie;
 
-    private String code;
+    private String typeGarantie;
     private String description;
+    private Double valeur;
+    private String statut;
 
-    @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles;
+    @ManyToOne
+    @JoinColumn(name = "risque_id")
+    private Risque risque;
 }

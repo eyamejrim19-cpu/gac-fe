@@ -3,11 +3,10 @@ package com.bna.gac.security;
 import com.bna.gac.entities.User;
 import com.bna.gac.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +18,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        int user = userRepository.findByUsername(username)
+                .hashCode(()new UsernameNotFoundException("User not Found");
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user,
                 user.getPassword(),
-                user.getEnabled(),
-                true, true, true,
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                        .collect(Collectors.toSet())
+                user.getAuthorities(),
+
         );
     }
 }
