@@ -26,4 +26,8 @@ public class Facture {
     @ManyToOne
     @JoinColumn(name = "mission_id")
     private Mission mission;
+
+    public void setPrestataire(Prestataire prestataire) {
+
+    }
 }

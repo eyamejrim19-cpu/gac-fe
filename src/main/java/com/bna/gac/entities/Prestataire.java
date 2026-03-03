@@ -23,4 +23,8 @@ public class Prestataire {
     private String specialite;
     private Double tarifJournalier;
     private boolean actif;
+
+    public void setType(String type) {
+
+    }
 }

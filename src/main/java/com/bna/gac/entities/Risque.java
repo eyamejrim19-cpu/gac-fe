@@ -3,6 +3,8 @@ package com.bna.gac.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -31,4 +33,14 @@ public class Risque {
     private DossierContentieux dossier;
     @OneToMany(mappedBy = "risque")
     private Set<Garantie> garanties;
+
+    public void setDateDebloquage(LocalDate dateDebloquage) {
+    }
+
+    public Risque(Garantie garantie) {
+    }
+
+    public void getGaranties(Garantie garantie) {
+
+    }
 }

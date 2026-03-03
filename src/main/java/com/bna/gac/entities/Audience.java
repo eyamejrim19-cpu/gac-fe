@@ -22,4 +22,8 @@ public class Audience {
     @ManyToOne
     @JoinColumn(name = "affaire_id")
     private Affaire affaire;
+
+    public void setDossier(DossierContentieux dossier) {
+
+    }
 }

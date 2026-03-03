@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -34,4 +35,10 @@ public class Affaire {
     private Set<Mission> missions;
     @OneToMany(mappedBy = "affaire")
     private Set<Audience> audiences;
+
+    public void setClient(Client client) {
+    }
+
+    public void setDateCreation(LocalDate now) {
+    }
 }

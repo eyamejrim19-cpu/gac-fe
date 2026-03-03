@@ -29,4 +29,8 @@ public class Client {
 
     @OneToMany(mappedBy = "client")
     private Set<DossierContentieux> dossiers;
+
+    public void setEmail(String email) {
+
+    }
 }

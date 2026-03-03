@@ -4,38 +4,36 @@ import com.bna.gac.dtos.UserRequestDTO;
 import com.bna.gac.dtos.UserResponseDTO;
 import com.bna.gac.entities.User;
 import com.bna.gac.services.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @PostMapping("/register")
     public UserResponseDTO register(@RequestBody UserRequestDTO request) {
 
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        User savedUser = userService.save(user);
+        User saved = userService.save(user);
 
-        return UserResponseDTO.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .build();
-    }
+        UserResponseDTO response = new UserResponseDTO();
+        response.setId(saved.getId());
+        response.setUsername(saved.getUsername());
+        response.setEmail(saved.getEmail());
 
-    @GetMapping("/test")
-    public String test() {
-        return "SECURED OK";
+        return response;
     }
 }

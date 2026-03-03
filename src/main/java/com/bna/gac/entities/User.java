@@ -1,42 +1,38 @@
 package com.bna.gac.entities;
 
-
-
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
+@Builder
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
-    private String password;
-    private String email;
-    private boolean enabled;
-    private LocalDateTime createdAt;
 
-    @ManyToMany
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_role",
+            name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
-
-    public boolean getEnabled() {
-        return false;
-    }
-
-    public Object getAuthorities() {
-    }
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 }

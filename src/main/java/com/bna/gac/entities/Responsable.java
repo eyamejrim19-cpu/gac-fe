@@ -14,4 +14,14 @@ public class Responsable extends User {
     private boolean validerMission;
     private boolean validerFactures;
     private boolean consulterStatistic;
+
+    public void setNom(String nom) {
+    }
+
+    public void setPrenom(String prenom) {
+    }
+
+    public void setTelephone(String telephone) {
+
+    }
 }
