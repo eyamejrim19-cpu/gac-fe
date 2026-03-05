@@ -1,5 +1,8 @@
 package com.bna.gac.dtos;
 
+import lombok.Data;
+
+@Data
 public class UserResponseDTO {
 
     private Long id;
