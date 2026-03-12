@@ -3,7 +3,7 @@ package com.bna.gac.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,5 +15,5 @@ public class ClientDTO {
     private String tel;
     private String adresse;
     private String cin;
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
 }

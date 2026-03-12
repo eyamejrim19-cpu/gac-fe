@@ -1,28 +1,46 @@
 package com.bna.gac.mapper;
 
-import com.bna.gac.dto.GarantieDto;
+import com.bna.gac.dto.GarantieDTO;
 import com.bna.gac.entities.Garantie;
-import com.bna.gac.entities.Risque;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface GarantieMapper {
+@Component
+public class GarantieMapper {
 
-    @Mapping(target = "risqueIds", expression = "java(mapRisqueIds(garantie.getRisques()))")
-    GarantieDto toDto(Garantie garantie);
+    public GarantieDTO toDTO(Garantie g) {
 
-    @Mapping(target = "risques", ignore = true)
-    Garantie toEntity(GarantieDto dto);
+        GarantieDTO dto = new GarantieDTO();
+        dto.setIdGarantie(g.getIdGarantie());
+        dto.setTypeGarantie(g.getTypeGarantie());
+        dto.setDescription(g.getDescription());
+        dto.setValeur(g.getValeur());
+        dto.setStatut(g.getStatut());
 
-    List<GarantieDto> toDtoList(List<Garantie> garanties);
+        if (g.getRisque() != null) {
+            dto.setRisqueId(g.getRisque().getIdRisque());
+        }
 
-    default List<Long> mapRisqueIds(List<Risque> risques) {
-        if (risques == null) return null;
-        return risques.stream()
-                .map(Risque::getIdRisque)
-                .toList();
+        return dto;
+    }
+
+    public Garantie toEntity(GarantieDTO dto) {
+
+        Garantie g = new Garantie();
+        g.setIdGarantie(dto.getIdGarantie());
+        g.setTypeGarantie(dto.getTypeGarantie());
+        g.setDescription(dto.getDescription());
+        g.setValeur(dto.getValeur());
+        g.setStatut(dto.getStatut());
+
+        return g;
+    }
+
+    public List<GarantieDTO> toDTOList(List<Garantie> list) {
+        return list.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 }

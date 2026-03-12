@@ -1,6 +1,6 @@
 package com.bna.gac.mapper;
 
-import com.bna.gac.dto.FactureDto;
+import com.bna.gac.dto.FactureDTO;
 import com.bna.gac.entities.Facture;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,11 +12,11 @@ public interface FactureMapper {
 
     @Mapping(source = "mission.idMission", target = "missionId")
     @Mapping(source = "prestataire.idPrestataire", target = "prestataireId")
-    FactureDto toDto(Facture facture);
+    FactureDTO toDto(Facture facture);
 
     @Mapping(target = "mission", ignore = true)
     @Mapping(target = "prestataire", ignore = true)
-    Facture toEntity(FactureDto dto);
+    Facture toEntity(FactureDTO dto);
 
-    List<FactureDto> toDtoList(List<Facture> factures);
+    List<FactureDTO> toDtoList(List<Facture> factures);
 }

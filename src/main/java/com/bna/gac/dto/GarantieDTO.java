@@ -1,17 +1,16 @@
 package com.bna.gac.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
-
-@Data
-public class GarantieDto {
+@Getter
+@Setter
+public class GarantieDTO {
 
     private Long idGarantie;
     private String typeGarantie;
     private String description;
     private Double valeur;
     private String statut;
-
-    private List<Long> risqueIds;
+    private Long risqueId;
 }

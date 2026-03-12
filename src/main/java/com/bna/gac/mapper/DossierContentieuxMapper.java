@@ -1,20 +1,21 @@
 package com.bna.gac.mapper;
 
-
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
 import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.dto.DossierContentieuxDTO;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface DossierContentieuxMapper {
 
-    // ENTITY ➜ DTO
-    @Mapping(source = "client.id", target = "clientId")
-    @Mapping(source = "chargeDossier.id", target = "chargeDossierId")
-    DossierContentieuxDTO toDTO(DossierContentieux entity);
+    DossierContentieuxDTO toDto(DossierContentieux dossier);
 
-    // DTO ➜ ENTITY
-    @Mapping(source = "clientId", target = "client.id")
-    @Mapping(source = "chargeDossierId", target = "chargeDossier.id")
     DossierContentieux toEntity(DossierContentieuxDTO dto);
+
+    DossierContentieuxDTO toDTO(DossierContentieux d);
+
+    List<DossierContentieuxDTO> toDTOList(List<DossierContentieux> all);
+
+    List<DossierContentieuxDTO> toDtoList(List<DossierContentieux> all);
 }

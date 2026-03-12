@@ -1,18 +1,11 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
-import com.bna.gac.dto.GarantieDto;
-
+import com.bna.gac.dto.GarantieDTO;
 import java.util.List;
 
 public interface GarantieService {
 
-    GarantieDto create(GarantieDto dto);
+    GarantieDTO save(GarantieDTO dto);
 
-    GarantieDto update(Long id, GarantieDto dto);
-
-    GarantieDto getById(Long id);
-
-    List<GarantieDto> getAll();
-
-    void delete(Long id);
+    List<GarantieDTO> findAll();
 }

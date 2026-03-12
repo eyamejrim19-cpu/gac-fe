@@ -1,10 +1,10 @@
 package com.bna.gac.entities;
 
-
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -25,8 +25,4 @@ public class Garantie {
     @ManyToOne
     @JoinColumn(name = "risque_id")
     private Risque risque;
-
-    public void setRisques(List<Risque> risques) {
-
-    }
 }

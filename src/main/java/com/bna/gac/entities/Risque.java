@@ -1,10 +1,11 @@
 package com.bna.gac.entities;
 
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -31,16 +32,7 @@ public class Risque {
     @ManyToOne
     @JoinColumn(name = "dossier_id")
     private DossierContentieux dossier;
-    @OneToMany(mappedBy = "risque")
+
+    @OneToMany(mappedBy = "risque", cascade = CascadeType.ALL)
     private Set<Garantie> garanties;
-
-    public void setDateDebloquage(LocalDate dateDebloquage) {
-    }
-
-    public Risque(Garantie garantie) {
-    }
-
-    public void getGaranties(Garantie garantie) {
-
-    }
 }

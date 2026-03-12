@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -16,7 +17,7 @@ public class ChargeDossier extends User {
     private String telephone;
 
     @OneToMany(mappedBy = "chargeDossier")
-    private List<DossierContentieux> dossiers;
+    private Set<DossierContentieux> dossiers;
 
     public void setCreatedAt(LocalDateTime now) {
     }

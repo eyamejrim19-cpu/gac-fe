@@ -1,6 +1,6 @@
 package com.bna.gac.services.impl;
 
-import com.bna.gac.dto.FactureDto;
+import com.bna.gac.dto.FactureDTO;
 import com.bna.gac.entities.Facture;
 import com.bna.gac.entities.Mission;
 import com.bna.gac.entities.Prestataire;
@@ -25,7 +25,7 @@ public class FactureServiceImpl implements FactureService {
     private final FactureMapper factureMapper;
 
     @Override
-    public FactureDto create(FactureDto dto) {
+    public FactureDTO create(FactureDTO dto) {
 
         Mission mission = missionRepository.findById(dto.getMissionId())
                 .orElseThrow(() -> new RuntimeException("Mission not found"));
@@ -41,7 +41,7 @@ public class FactureServiceImpl implements FactureService {
     }
 
     @Override
-    public FactureDto update(Long id, FactureDto dto) {
+    public FactureDTO update(Long id, FactureDTO dto) {
 
         Facture facture = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture not found"));
@@ -56,14 +56,14 @@ public class FactureServiceImpl implements FactureService {
     }
 
     @Override
-    public FactureDto getById(Long id) {
+    public FactureDTO getById(Long id) {
         Facture facture = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture not found"));
         return factureMapper.toDto(facture);
     }
 
     @Override
-    public List<FactureDto> getAll() {
+    public List<FactureDTO> getAll() {
         return factureMapper.toDtoList(factureRepository.findAll());
     }
 

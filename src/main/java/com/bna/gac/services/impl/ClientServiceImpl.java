@@ -1,63 +1,43 @@
 package com.bna.gac.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import com.bna.gac.dto.ClientDTO;
 import com.bna.gac.entities.Client;
 import com.bna.gac.mapper.ClientMapper;
 import com.bna.gac.repositories.ClientRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.bna.gac.services.ClientService;
 
-import java.time.LocalDate;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ClientServiceImpl implements ClientService {
 
-    private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
+    private final ClientRepository repository;
+    private final ClientMapper mapper;
 
     @Override
-    public ClientDTO createClient(ClientDTO dto) {
-        Client client = clientMapper.toEntity(dto);
-        client.setDateCreation(LocalDate.now().atStartOfDay());
-
-        Client saved = clientRepository.save(client);
-        return clientMapper.toDto(saved);
+    public ClientDTO save(ClientDTO dto) {
+        Client client = mapper.toEntity(dto);
+        return mapper.toDTO(repository.save(client));
     }
 
     @Override
-    public List<ClientDTO> getAllClients() {
-        return clientMapper.toDtoList(clientRepository.findAll());
+    public List<ClientDTO> findAll() {
+        return mapper.toDTOList(repository.findAll());
     }
 
     @Override
-    public ClientDTO getClientById(Long id) {
-        Client client = clientRepository.findById(id)
+    public ClientDTO findById(Long id) {
+        Client client = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
-        return clientMapper.toDto(client);
+        return mapper.toDTO(client);
     }
 
     @Override
-    public ClientDTO updateClient(Long id, ClientDTO dto) {
-
-        Client existing = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
-
-        existing.setNom(dto.getNom());
-        existing.setPrenom(dto.getPrenom());
-        existing.setTel(dto.getTel());
-        existing.setAdresse(dto.getAdresse());
-        existing.setCin(dto.getCin());
-
-        Client updated = clientRepository.save(existing);
-        return clientMapper.toDto(updated);
-    }
-
-    @Override
-    public void deleteClient(Long id) {
-        clientRepository.deleteById(id);
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

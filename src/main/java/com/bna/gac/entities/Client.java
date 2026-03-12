@@ -27,10 +27,6 @@ public class Client {
     private String cin;
     private LocalDateTime dateCreation;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<DossierContentieux> dossiers;
-
-    public void setEmail(String email) {
-
-    }
 }

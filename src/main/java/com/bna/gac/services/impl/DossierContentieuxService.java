@@ -1,22 +1,19 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.DossierContentieuxDTO;
-
 import java.util.List;
 
 public interface DossierContentieuxService {
 
-    DossierContentieuxDTO createDossier(DossierContentieuxDTO dto);
+    DossierContentieuxDTO save(DossierContentieuxDTO dto);
 
-    DossierContentieuxDTO updateDossier(Long id, DossierContentieuxDTO dto);
+    List<DossierContentieuxDTO> findAll();
 
-    void deleteDossier(Long id);
+    DossierContentieuxDTO create(DossierContentieuxDTO dto);
 
-    DossierContentieuxDTO getDossierById(Long id);
+    List<DossierContentieuxDTO> getAll();
 
-    List<DossierContentieuxDTO> getAllDossiers();
+    DossierContentieuxDTO getById(Long id);
 
-    List<DossierContentieuxDTO> getDossiersByStatut(String statut);
-
-    DossierContentieuxDTO closeDossier(Long id);
+    void delete(Long id);
 }

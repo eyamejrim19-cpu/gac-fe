@@ -1,18 +1,18 @@
 package com.bna.gac.services.impl;
 
-import com.bna.gac.dto.FactureDto;
+import com.bna.gac.dto.FactureDTO;
 
 import java.util.List;
 
 public interface FactureService {
 
-    FactureDto create(FactureDto dto);
+    FactureDTO create(FactureDTO dto);
 
-    FactureDto update(Long id, FactureDto dto);
+    FactureDTO update(Long id, FactureDTO dto);
 
-    FactureDto getById(Long id);
+    FactureDTO getById(Long id);
 
-    List<FactureDto> getAll();
+    List<FactureDTO> getAll();
 
     void delete(Long id);
 }

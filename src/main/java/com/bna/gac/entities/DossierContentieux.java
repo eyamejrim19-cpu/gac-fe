@@ -29,11 +29,16 @@ public class DossierContentieux {
     private Double montantRecupere;
 
     @ManyToOne
+    @JoinColumn(name = "charge_dossier_id")
+    private ChargeDossier chargeDossier;
+
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @OneToMany(mappedBy = "dossier")
+    @OneToMany(mappedBy = "dossier", cascade = CascadeType.ALL)
     private Set<Affaire> affaires;
-    @OneToMany(mappedBy = "dossier")
+
+    @OneToMany(mappedBy = "dossier", cascade = CascadeType.ALL)
     private Set<Risque> risques;
 }

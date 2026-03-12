@@ -1,18 +1,15 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.ClientDTO;
-
 import java.util.List;
 
 public interface ClientService {
 
-    ClientDTO createClient(ClientDTO dto);
+    ClientDTO save(ClientDTO dto);
 
-    List<ClientDTO> getAllClients();
+    List<ClientDTO> findAll();
 
-    ClientDTO getClientById(Long id);
+    ClientDTO findById(Long id);
 
-    ClientDTO updateClient(Long id, ClientDTO dto);
-
-    void deleteClient(Long id);
+    void delete(Long id);
 }
