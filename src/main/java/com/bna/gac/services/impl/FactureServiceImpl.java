@@ -71,4 +71,19 @@ public class FactureServiceImpl implements FactureService {
     public void delete(Long id) {
         factureRepository.deleteById(id);
     }
+
+    public List<Facture> getAllFactures() {
+        return List.of();
+    }
+
+    public Facture getFactureById(Long id) {
+        return null;
+    }
+
+    public Facture saveFacture(Facture facture) {
+        return facture;
+    }
+
+    public void deleteFacture(Long id) {
+    }
 }

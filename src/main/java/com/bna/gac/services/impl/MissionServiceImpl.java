@@ -1,5 +1,6 @@
 package com.bna.gac.services.impl;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.bna.gac.dto.MissionDTO;
 import com.bna.gac.entities.Mission;
 import com.bna.gac.entities.Prestataire;
@@ -72,5 +73,17 @@ public class MissionServiceImpl implements MissionService {
             throw new RuntimeException("Mission not found");
         }
         missionRepository.deleteById(id);
+    }
+
+    public List<Mission> getAllMissions() {
+        return List.of();
+    }
+
+    public Remapper getMissionById(Long id) {
+        return null;
+    }
+
+    public List<Mission> getMissionsByConvention(boolean b) {
+        return List.of();
     }
 }

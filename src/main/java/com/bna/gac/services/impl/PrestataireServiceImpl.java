@@ -57,4 +57,23 @@ public class PrestataireServiceImpl implements PrestataireService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    public Prestataire addPrestataire(Prestataire prestataire) {
+        return prestataire;
+    }
+
+    public List<Prestataire> getAllPrestataires() {
+        return List.of();
+    }
+
+    public Prestataire getPrestataireById(Long id) {
+        return null;
+    }
+
+    public Prestataire updatePrestataire(Long id, Prestataire prestataire) {
+        return prestataire;
+    }
+
+    public void deletePrestataire(Long id) {
+    }
 }
