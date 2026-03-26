@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/factures")
+@CrossOrigin(origins = "http://localhost:4200")
 public class FactureController {
 
     private final FactureServiceImpl factureService;

@@ -4,6 +4,7 @@ import com.bna.gac.dto.FactureDTO;
 
 import java.util.List;
 
+
 public interface FactureService {
 
     FactureDTO create(FactureDTO dto);
