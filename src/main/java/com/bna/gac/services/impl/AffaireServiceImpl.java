@@ -14,13 +14,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class AffaireServiceImpl implements AffaireService {
 
     private final AffaireRepository affaireRepository;
     private final ClientRepository clientRepository;
-    private final AffaireMapper mapper;
+    private  AffaireMapper mapper;
+
+    public AffaireServiceImpl(AffaireRepository affaireRepository, ClientRepository clientRepository) {
+        this.affaireRepository = affaireRepository;
+        this.clientRepository = clientRepository;
+    }
 
     @Override
     public AffaireDTO create(AffaireDTO dto) {

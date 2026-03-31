@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class HuissierServiceImpl implements HuissierService {
 
     private final HuissierRepository repository;
-    private final HuissierMapper mapper;
+    private  HuissierMapper mapper;
+
+    public HuissierServiceImpl(HuissierRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public HuissierDTO create(HuissierDTO dto) {

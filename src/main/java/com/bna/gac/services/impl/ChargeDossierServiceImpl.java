@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ChargeDossierServiceImpl implements ChargeDossierService {
 
     private final ChargeDossierRepository repository;
-    private final ChargeDossierMapper mapper;
+    private  ChargeDossierMapper mapper;
+
+    public ChargeDossierServiceImpl(ChargeDossierRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public ChargeDossierDTO create(ChargeDossierDTO dto) {

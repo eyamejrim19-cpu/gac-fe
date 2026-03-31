@@ -1,4 +1,4 @@
-package com.bna.gac.services;
+package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.DossierContentieuxDTO;
 import java.util.List;

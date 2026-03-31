@@ -1,9 +1,9 @@
 package com.bna.gac.controllers;
 
+import com.bna.gac.services.impl.DossierContentieuxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.bna.gac.dto.DossierContentieuxDTO;
-import com.bna.gac.services.DossierContentieuxService;
 
 import java.util.List;
 

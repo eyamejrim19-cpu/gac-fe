@@ -6,20 +6,24 @@ import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.mapper.DossierContentieuxMapper;
 import com.bna.gac.repositories.ClientRepository;
 import com.bna.gac.repositories.DossierContentieuxRepository;
-import com.bna.gac.services.DossierContentieuxService;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class DossierServiceImpl implements DossierContentieuxService {
 
     private final DossierContentieuxRepository dossierRepository;
     private final ClientRepository clientRepository;
-    private final DossierContentieuxMapper mapper;
+    private  DossierContentieuxMapper mapper;
+
+    public DossierServiceImpl(DossierContentieuxRepository dossierRepository, ClientRepository clientRepository) {
+        this.dossierRepository = dossierRepository;
+        this.clientRepository = clientRepository;
+    }
 
     @Override
     public DossierContentieuxDTO save(DossierContentieuxDTO dto) {

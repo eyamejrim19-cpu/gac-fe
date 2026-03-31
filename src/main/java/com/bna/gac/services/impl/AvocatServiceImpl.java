@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class AvocatServiceImpl implements AvocatService {
 
     private final AvocatRepository repository;
-    private final AvocatMapper mapper;
+    private  AvocatMapper mapper;
+
+    public AvocatServiceImpl(AvocatRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public AvocatDTO create(AvocatDTO dto) {

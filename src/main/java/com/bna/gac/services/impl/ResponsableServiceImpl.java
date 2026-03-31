@@ -12,11 +12,15 @@ import com.bna.gac.services.impl.ResponsableService;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+
 public class ResponsableServiceImpl implements ResponsableService {
 
     private final ResponsableRepository repository;
-    private final ResponsableMapper mapper;
+    private  ResponsableMapper mapper;
+
+    public ResponsableServiceImpl(ResponsableRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public ResponsableDTO save(ResponsableDTO dto) {

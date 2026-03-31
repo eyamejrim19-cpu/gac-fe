@@ -15,14 +15,19 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class FactureServiceImpl implements FactureService {
 
     private final FactureRepository factureRepository;
     private final MissionRepository missionRepository;
     private final PrestataireRepository prestataireRepository;
-    private final FactureMapper factureMapper;
+    private  FactureMapper factureMapper;
+
+    public FactureServiceImpl(FactureRepository factureRepository, MissionRepository missionRepository, PrestataireRepository prestataireRepository) {
+        this.factureRepository = factureRepository;
+        this.missionRepository = missionRepository;
+        this.prestataireRepository = prestataireRepository;
+    }
 
     @Override
     public FactureDTO create(FactureDTO dto) {

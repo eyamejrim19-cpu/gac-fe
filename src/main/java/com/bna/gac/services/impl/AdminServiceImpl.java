@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository repository;
-    private final AdminMapper mapper;
+    private  AdminMapper mapper;
+
+    public AdminServiceImpl(AdminRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public AdminDTO create(AdminDTO dto) {

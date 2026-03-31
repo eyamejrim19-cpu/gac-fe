@@ -11,11 +11,14 @@ import com.bna.gac.services.ClientService;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository repository;
-    private final ClientMapper mapper;
+    private  ClientMapper mapper;
+
+    public ClientServiceImpl(ClientRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public ClientDTO save(ClientDTO dto) {

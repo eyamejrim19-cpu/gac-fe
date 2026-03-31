@@ -1,4 +1,4 @@
-package com.bna.gac.security;
+/* package com.bna.gac.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,3 +50,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+ */

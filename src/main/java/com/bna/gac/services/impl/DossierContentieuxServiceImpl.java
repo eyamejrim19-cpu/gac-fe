@@ -4,7 +4,6 @@ import com.bna.gac.dto.DossierContentieuxDTO;
 import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.mapper.DossierContentieuxMapper;
 import com.bna.gac.repositories.DossierContentieuxRepository;
-import com.bna.gac.services.DossierContentieuxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public abstract class DossierContentieuxServiceImpl implements DossierContentieuxService {
 
     private final DossierContentieuxRepository repository;
-    private final DossierContentieuxMapper mapper;
+    private  DossierContentieuxMapper mapper;
 
     @Override
     public DossierContentieuxDTO create(DossierContentieuxDTO dto) {

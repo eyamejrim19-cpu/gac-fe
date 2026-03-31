@@ -14,11 +14,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class PrestataireServiceImpl implements PrestataireService {
 
     private final PrestataireRepository repository;
-    private final PrestataireMapper mapper;
+    private  PrestataireMapper mapper;
+
+    public PrestataireServiceImpl(PrestataireRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public PrestataireDTO save(PrestataireDTO dto) {
@@ -59,11 +62,12 @@ public class PrestataireServiceImpl implements PrestataireService {
     }
 
     public Prestataire addPrestataire(Prestataire prestataire) {
+        repository.save(prestataire);
         return prestataire;
     }
 
     public List<Prestataire> getAllPrestataires() {
-        return List.of();
+        return repository.findAll();
     }
 
     public Prestataire getPrestataireById(Long id) {
@@ -71,9 +75,23 @@ public class PrestataireServiceImpl implements PrestataireService {
     }
 
     public Prestataire updatePrestataire(Long id, Prestataire prestataire) {
-        return prestataire;
+
+        Prestataire existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Prestataire not found"));
+
+        existing.setNom(prestataire.getNom());
+        existing.setType(prestataire.getTypePrestataire());
+        existing.setEmail(prestataire.getEmail());
+        existing.setTelephone(prestataire.getTelephone());
+        existing.setAdresse(prestataire.getAdresse());
+        existing.setSpecialite(prestataire.getSpecialite());
+        existing.setTarifJournalier(prestataire.getTarifJournalier());
+        existing.setActif(prestataire.isActif());
+        repository.save(existing);
+        return existing;
     }
 
     public void deletePrestataire(Long id) {
+        repository.deleteById(id);
     }
 }

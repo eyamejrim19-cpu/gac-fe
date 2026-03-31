@@ -11,11 +11,14 @@ import com.bna.gac.services.GarantieService;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class GarantieServiceImpl implements GarantieService {
 
     private final GarantieRepository repository;
-    private final GarantieMapper mapper;
+    private  GarantieMapper mapper;
+
+    public GarantieServiceImpl(GarantieRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public GarantieDTO save(GarantieDTO dto) {

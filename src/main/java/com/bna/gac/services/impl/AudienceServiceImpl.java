@@ -13,13 +13,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class AudienceServiceImpl implements AudienceService {
 
     private final AudienceRepository audienceRepository;
     private final DossierContentieuxRepository dossierRepository;
-    private final AudienceMapper mapper;
+    private  AudienceMapper mapper;
+
+    public AudienceServiceImpl(AudienceRepository audienceRepository, DossierContentieuxRepository dossierRepository) {
+        this.audienceRepository = audienceRepository;
+        this.dossierRepository = dossierRepository;
+    }
 
     @Override
     public AudienceDTO create(AudienceDTO dto) {

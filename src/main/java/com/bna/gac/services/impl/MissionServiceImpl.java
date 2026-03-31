@@ -14,13 +14,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class MissionServiceImpl implements MissionService {
 
     private final MissionRepository missionRepository;
     private final PrestataireRepository prestataireRepository;
-    private final MissionMapper missionMapper;
+    private  MissionMapper missionMapper;
+
+    public MissionServiceImpl(MissionRepository missionRepository, PrestataireRepository prestataireRepository) {
+        this.missionRepository = missionRepository;
+        this.prestataireRepository = prestataireRepository;
+    }
 
     @Override
     public MissionDTO create(MissionDTO dto) {

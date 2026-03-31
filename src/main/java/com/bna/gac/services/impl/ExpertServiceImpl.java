@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class ExpertServiceImpl implements ExpertService {
 
     private final ExpertRepository repository;
-    private final ExpertMapper mapper;
+    private  ExpertMapper mapper;
+
+    public ExpertServiceImpl(ExpertRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public ExpertDTO create(ExpertDTO dto) {

@@ -11,11 +11,14 @@ import com.bna.gac.services.RisqueService;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class RisqueServiceImpl implements RisqueService {
 
     private final RisqueRepository repository;
-    private final RisqueMapper mapper;
+    private  RisqueMapper mapper;
+
+    public RisqueServiceImpl(RisqueRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public RisqueDTO save(RisqueDTO dto) {
