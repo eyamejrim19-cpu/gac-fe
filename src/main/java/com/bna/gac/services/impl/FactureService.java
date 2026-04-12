@@ -1,9 +1,9 @@
 package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.FactureDTO;
+import com.bna.gac.entities.Facture;
 
 import java.util.List;
-
 
 public interface FactureService {
 
@@ -16,4 +16,6 @@ public interface FactureService {
     List<FactureDTO> getAll();
 
     void delete(Long id);
+
+    Facture getFactureById(Long id);
 }

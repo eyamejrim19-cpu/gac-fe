@@ -14,17 +14,22 @@ public class Prestataire {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPrestataire;
 
-    private String typePrestataire;
     private String nom;
     private String prenom;
     private String telephone;
     private String email;
     private String adresse;
     private String specialite;
+
     private Double tarifJournalier;
+
     private boolean actif;
 
-    public void setType(String type) {
+    @Enumerated(EnumType.STRING)
+    private TypePrestataire typePrestataire;
 
+    public boolean getActif() {
+
+        return false;
     }
 }

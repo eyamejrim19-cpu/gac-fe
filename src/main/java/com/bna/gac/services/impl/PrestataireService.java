@@ -1,18 +1,22 @@
 package com.bna.gac.services.impl;
 
+import com.bna.gac.entities.Prestataire;
+import com.bna.gac.entities.TypePrestataire;
 
-import com.bna.gac.dto.PrestataireDTO;
 import java.util.List;
 
 public interface PrestataireService {
 
-    PrestataireDTO save(PrestataireDTO dto);
+    Prestataire addPrestataire(Prestataire prestataire);
 
-    List<PrestataireDTO> findAll();
+    List<Prestataire> getAllPrestataires();
 
-    PrestataireDTO findById(Long id);
+    Prestataire getPrestataireById(Long id);
 
-    PrestataireDTO update(Long id, PrestataireDTO dto);
+    List<Prestataire> getPrestatairesByType(TypePrestataire type);
 
-    void delete(Long id);
+    Prestataire updatePrestataire(Long id, Prestataire prestataire);
+
+    void deletePrestataire(Long id);
+
 }

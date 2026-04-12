@@ -2,74 +2,78 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.FactureDTO;
 import com.bna.gac.entities.Facture;
-import com.bna.gac.entities.Mission;
-import com.bna.gac.entities.Prestataire;
-import com.bna.gac.mapper.FactureMapper;
 import com.bna.gac.repositories.FactureRepository;
-import com.bna.gac.repositories.MissionRepository;
-import com.bna.gac.repositories.PrestataireRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class FactureServiceImpl implements FactureService {
 
     private final FactureRepository factureRepository;
-    private final MissionRepository missionRepository;
-    private final PrestataireRepository prestataireRepository;
-    private  FactureMapper factureMapper;
 
-    public FactureServiceImpl(FactureRepository factureRepository, MissionRepository missionRepository, PrestataireRepository prestataireRepository) {
-        this.factureRepository = factureRepository;
-        this.missionRepository = missionRepository;
-        this.prestataireRepository = prestataireRepository;
+    // ENTITY -> DTO
+    private FactureDTO toDTO(Facture f) {
+        FactureDTO dto = new FactureDTO();
+        dto.setIdFacture(f.getIdFacture());
+        dto.setNumero(f.getNumero());
+        dto.setMontant(f.getMontant());
+        dto.setDateEmission(LocalDate.from(f.getDateEmission()));
+        dto.setTypeFacture(f.getTypeFacture());
+        dto.setStatut(f.getStatut());
+        return dto;
+    }
+
+    // DTO -> ENTITY
+    private Facture toEntity(FactureDTO dto) {
+        Facture f = new Facture();
+        f.setIdFacture(dto.getIdFacture());
+        f.setNumero(dto.getNumero());
+        f.setMontant(dto.getMontant());
+        f.setDateEmission(dto.getDateEmission().atStartOfDay());
+        f.setTypeFacture(dto.getTypeFacture());
+        f.setStatut(dto.getStatut());
+        return f;
     }
 
     @Override
     public FactureDTO create(FactureDTO dto) {
-
-        Mission mission = missionRepository.findById(dto.getMissionId())
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
-
-        Prestataire prestataire = prestataireRepository.findById(dto.getPrestataireId())
-                .orElseThrow(() -> new RuntimeException("Prestataire not found"));
-
-        Facture facture = factureMapper.toEntity(dto);
-        facture.setMission(mission);
-        facture.setPrestataire(prestataire);
-
-        return factureMapper.toDto(factureRepository.save(facture));
+        Facture saved = factureRepository.save(toEntity(dto));
+        return toDTO(saved);
     }
 
     @Override
     public FactureDTO update(Long id, FactureDTO dto) {
-
-        Facture facture = factureRepository.findById(id)
+        Facture existing = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture not found"));
 
-        facture.setNumero(dto.getNumero());
-        facture.setDateEmission(dto.getDateEmission().atStartOfDay());
-        facture.setMontant(dto.getMontant());
-        facture.setStatut(dto.getStatut());
-        facture.setTypeFacture(dto.getTypeFacture());
+        existing.setNumero(dto.getNumero());
+        existing.setMontant(dto.getMontant());
+        existing.setDateEmission(dto.getDateEmission().atStartOfDay());
+        existing.setTypeFacture(dto.getTypeFacture());
+        existing.setStatut(dto.getStatut());
 
-        return factureMapper.toDto(factureRepository.save(facture));
+        return toDTO(factureRepository.save(existing));
     }
 
     @Override
     public FactureDTO getById(Long id) {
-        Facture facture = factureRepository.findById(id)
+        Facture f = factureRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Facture not found"));
-        return factureMapper.toDto(facture);
+
+        return toDTO(f);
     }
 
     @Override
     public List<FactureDTO> getAll() {
-        return factureMapper.toDtoList(factureRepository.findAll());
+        return factureRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -77,10 +81,7 @@ public class FactureServiceImpl implements FactureService {
         factureRepository.deleteById(id);
     }
 
-    public List<Facture> getAllFactures() {
-        return List.of();
-    }
-
+    @Override
     public Facture getFactureById(Long id) {
         return null;
     }
