@@ -1,8 +1,10 @@
-package com.bna.gac.security;
+package com.bna.gac.services.impl;
 
 import com.bna.gac.entities.User;
 import com.bna.gac.repositories.UserRepository;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,17 +17,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
-
+    public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .authorities("USER")
-                .build();
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .toList()
+        );
     }
 }

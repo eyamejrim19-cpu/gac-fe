@@ -1,12 +1,13 @@
-package com.bna.gac.services;
+package com.bna.gac.services.impl;
 
 
+import com.bna.gac.dto.RegisterRequestDTO;
 import com.bna.gac.entities.User;
 import java.util.List;
 
 public interface UserService {
 
-    User saveUser(User user);
+    String saveUser(RegisterRequestDTO request);
 
     List<User> getAllUsers();
 

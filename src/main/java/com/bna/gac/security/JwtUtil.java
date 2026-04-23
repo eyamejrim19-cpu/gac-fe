@@ -7,10 +7,14 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtUtil {
@@ -29,16 +33,23 @@ public class JwtUtil {
     }
 
 
-    public String generateToken(String username) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMillis);
+    public String generateToken(UserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
 
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(signingKey)
+                .subject(userDetails.getUsername())
+                .claim("roles", roles)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(getSigningKey())
                 .compact();
+    }
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretBase64.getBytes());
     }
 
     private Claims extractAllClaims(String token) {

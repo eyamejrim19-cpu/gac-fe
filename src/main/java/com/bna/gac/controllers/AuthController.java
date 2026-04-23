@@ -6,7 +6,10 @@ import com.bna.gac.entities.User;
 import com.bna.gac.repositories.RoleRepository;
 import com.bna.gac.repositories.UserRepository;
 import com.bna.gac.security.JwtUtil;
+import com.bna.gac.services.impl.UserService;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,36 +25,26 @@ public class AuthController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    private final UserService userService;
+    private final UserDetailsService userDetailsService;
+
     public AuthController(AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil,
                           PasswordEncoder passwordEncoder,
                           UserRepository userRepository,
-                          RoleRepository roleRepository) {
+                          RoleRepository roleRepository, UserService userService, UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userService = userService;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequestDTO request) {
-
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return "Username already exists";
-        }
-
-        Role role = roleRepository.findByName("USER")
-                .orElseGet(() -> roleRepository.save(new Role("USER")));
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(Set.of(role));
-
-        userRepository.save(user);
-
-        return "User registered successfully";
+       return userService.saveUser(request);
     }
 
     @PostMapping("/login")
@@ -64,7 +57,8 @@ public class AuthController {
                 )
         );
 
-        String token = jwtUtil.generateToken(request.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String token = jwtUtil.generateToken(userDetails);
         return new AuthResponseDTO(token);
     }
 

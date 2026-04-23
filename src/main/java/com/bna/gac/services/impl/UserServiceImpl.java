@@ -1,16 +1,17 @@
 package com.bna.gac.services.impl;
 
 
+import com.bna.gac.dto.RegisterRequestDTO;
 import com.bna.gac.entities.Role;
 import com.bna.gac.entities.User;
 import com.bna.gac.repositories.RoleRepository;
 import com.bna.gac.repositories.UserRepository;
-import com.bna.gac.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +22,21 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public String saveUser(RegisterRequestDTO request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            return "Username already exists";
+        }
+
+        Role role = roleRepository.findByName("USER")
+                .orElseGet(() -> roleRepository.save(new Role("USER")));
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(Set.of(role));
+
+        userRepository.save(user);
+        return "User registered successfully";
     }
 
     @Override
