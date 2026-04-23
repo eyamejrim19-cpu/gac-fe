@@ -4,45 +4,44 @@ import com.bna.gac.dto.ClientDTO;
 import com.bna.gac.entities.Client;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
 public class ClientMapper {
 
-    public ClientDTO toDTO(Client client) {
-        if (client == null) return null;
+    public ClientDTO toDto(Client c) {
+
+        if (c == null) return null;
 
         ClientDTO dto = new ClientDTO();
-        dto.setIdClient(client.getIdClient());
-        dto.setNom(client.getNom());
-        dto.setPrenom(client.getPrenom());
-        dto.setTel(client.getTel());
-        dto.setAdresse(client.getAdresse());
-        dto.setCin(client.getCin());
-        dto.setDateCreation(client.getDateCreation());
+
+        dto.setId(c.getId());
+        dto.setNom(c.getNom());
+        dto.setPrenom(c.getPrenom());
+        dto.setCin(c.getCin());
+        dto.setTel(c.getTel());
+        dto.setEmail(c.getEmail());
+        dto.setAdresse(c.getAdresse());
+        dto.setActive(c.getActive());
+        dto.setDateCreation(c.getDateCreation());
 
         return dto;
     }
 
     public Client toEntity(ClientDTO dto) {
+
         if (dto == null) return null;
 
-        Client client = new Client();
-        client.setIdClient(dto.getIdClient());
-        client.setNom(dto.getNom());
-        client.setPrenom(dto.getPrenom());
-        client.setTel(dto.getTel());
-        client.setAdresse(dto.getAdresse());
-        client.setCin(dto.getCin());
-        client.setDateCreation(dto.getDateCreation());
+        Client c = new Client();
 
-        return client;
-    }
+        c.setId(dto.getId());
+        c.setNom(dto.getNom());
+        c.setPrenom(dto.getPrenom());
+        c.setCin(dto.getCin());
+        c.setTel(dto.getTel());
+        c.setEmail(dto.getEmail());
+        c.setAdresse(dto.getAdresse());
+        c.setActive(dto.getActive());
 
-    public List<ClientDTO> toDTOList(List<Client> clients) {
-        return clients.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return c;
     }
 }
+

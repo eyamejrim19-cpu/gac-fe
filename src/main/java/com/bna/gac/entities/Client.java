@@ -1,5 +1,4 @@
 package com.bna.gac.entities;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -18,15 +16,18 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idClient;
+    @Column(name = "id_client")
+    private Long id;
 
     private String nom;
     private String prenom;
-    private String tel;
-    private String adresse;
     private String cin;
-    private LocalDateTime dateCreation;
+    private String tel;
+    private String email;
+    private String adresse;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private Set<DossierContentieux> dossiers;
+    private Boolean active;
+
+    @Column(name = "date_creation")
+    private LocalDateTime dateCreation;
 }

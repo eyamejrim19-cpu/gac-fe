@@ -1,7 +1,7 @@
 package com.bna.gac.repositories;
 
-import com.bna.gac.entities.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.bna.gac.entities.Client;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
 }
