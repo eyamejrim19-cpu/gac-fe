@@ -5,8 +5,6 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,11 +16,4 @@ public class ChargeDossier extends User {
 
     @OneToMany(mappedBy = "chargeDossier")
     private Set<DossierContentieux> dossiers;
-
-    public void setCreatedAt(LocalDateTime now) {
-    }
-
-    public void setEnabled(boolean b) {
-
-    }
 }

@@ -2,6 +2,7 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.ClientDTO;
 import com.bna.gac.entities.Client;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.repositories.ClientRepository;
 import com.bna.gac.services.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,8 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository repository;
 
     @Override
-    public ClientDTO save(ClientDTO dto) {
+    public ClientDTO create(ClientDTO dto) {
         Client client = new Client();
-
-        client.setId(dto.getId());
         client.setNom(dto.getNom());
         client.setPrenom(dto.getPrenom());
         client.setCin(dto.getCin());
@@ -29,49 +28,59 @@ public class ClientServiceImpl implements ClientService {
         client.setEmail(dto.getEmail());
         client.setAdresse(dto.getAdresse());
         client.setActive(dto.getActive() != null ? dto.getActive() : true);
-
-        client.setDateCreation(
-                dto.getDateCreation() != null ? dto.getDateCreation() : LocalDateTime.now()
-        );
-
-        Client saved = repository.save(client);
-
-        ClientDTO result = new ClientDTO();
-        result.setId(saved.getId());
-        result.setNom(saved.getNom());
-        result.setPrenom(saved.getPrenom());
-        result.setCin(saved.getCin());
-        result.setTel(saved.getTel());
-        result.setEmail(saved.getEmail());
-        result.setAdresse(saved.getAdresse());
-        result.setActive(saved.getActive());
-        result.setDateCreation(saved.getDateCreation());
-
-        return result;
+        client.setDateCreation(dto.getDateCreation() != null ? dto.getDateCreation() : LocalDateTime.now());
+        return toDto(repository.save(client));
     }
 
     @Override
-    public List<ClientDTO> findAll() {
+    public ClientDTO update(Long id, ClientDTO dto) {
+        Client client = findClient(id);
+        client.setNom(dto.getNom());
+        client.setPrenom(dto.getPrenom());
+        client.setCin(dto.getCin());
+        client.setTel(dto.getTel());
+        client.setEmail(dto.getEmail());
+        client.setAdresse(dto.getAdresse());
+        if (dto.getActive() != null) {
+            client.setActive(dto.getActive());
+        }
+        return toDto(repository.save(client));
+    }
+
+    @Override
+    public ClientDTO getById(Long id) {
+        return toDto(findClient(id));
+    }
+
+    @Override
+    public List<ClientDTO> getAll() {
         return repository.findAll()
                 .stream()
-                .map(c -> {
-                    ClientDTO dto = new ClientDTO();
-                    dto.setId(c.getId());
-                    dto.setNom(c.getNom());
-                    dto.setPrenom(c.getPrenom());
-                    dto.setCin(c.getCin());
-                    dto.setTel(c.getTel());
-                    dto.setEmail(c.getEmail());
-                    dto.setAdresse(c.getAdresse());
-                    dto.setActive(c.getActive());
-                    dto.setDateCreation(c.getDateCreation());
-                    return dto;
-                })
+                .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(findClient(id));
+    }
+
+    private Client findClient(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+    }
+
+    private ClientDTO toDto(Client client) {
+        ClientDTO dto = new ClientDTO();
+        dto.setId(client.getId());
+        dto.setNom(client.getNom());
+        dto.setPrenom(client.getPrenom());
+        dto.setCin(client.getCin());
+        dto.setTel(client.getTel());
+        dto.setEmail(client.getEmail());
+        dto.setAdresse(client.getAdresse());
+        dto.setActive(client.getActive());
+        dto.setDateCreation(client.getDateCreation());
+        return dto;
     }
 }

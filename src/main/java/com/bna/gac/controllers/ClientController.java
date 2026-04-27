@@ -17,18 +17,22 @@ public class ClientController {
 
     @PostMapping
     public ClientDTO create(@RequestBody ClientDTO dto) {
-        return service.save(dto);
+        return service.create(dto);
     }
 
     @GetMapping
     public List<ClientDTO> getAll() {
-        return service.findAll();
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public ClientDTO getById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
     @PutMapping("/{id}")
     public ClientDTO update(@PathVariable Long id, @RequestBody ClientDTO dto) {
-        dto.setId(id);
-        return service.save(dto);
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

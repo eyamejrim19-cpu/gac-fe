@@ -4,19 +4,25 @@ import com.bna.gac.dto.FactureDTO;
 import com.bna.gac.entities.Facture;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface FactureMapper {
 
     @Mapping(source = "mission.idMission", target = "missionId")
-    @Mapping(source = "prestataire.idPrestataire", target = "prestataireId")
-    FactureDTO toDto(Facture facture);
+    FactureDTO toDto(Facture entity);
 
     @Mapping(target = "mission", ignore = true)
-    @Mapping(target = "prestataire", ignore = true)
     Facture toEntity(FactureDTO dto);
 
-    List<FactureDTO> toDtoList(List<Facture> factures);
+    default LocalDate map(LocalDateTime value) {
+        return value == null ? null : value.toLocalDate();
+    }
+
+    default LocalDateTime map(LocalDate value) {
+        return value == null ? null : value.atStartOfDay();
+    }
 }

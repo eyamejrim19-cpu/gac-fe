@@ -16,11 +16,26 @@ public class GarantieController {
 
     @PostMapping
     public GarantieDTO create(@RequestBody GarantieDTO dto) {
-        return service.save(dto);
+        return service.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    public GarantieDTO update(@PathVariable Long id, @RequestBody GarantieDTO dto) {
+        return service.update(id, dto);
     }
 
     @GetMapping
     public List<GarantieDTO> getAll() {
-        return service.findAll();
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public GarantieDTO getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

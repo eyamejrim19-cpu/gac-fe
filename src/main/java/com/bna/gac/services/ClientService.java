@@ -5,9 +5,13 @@ import java.util.List;
 
 public interface ClientService {
 
-    ClientDTO save(ClientDTO dto);
+    ClientDTO create(ClientDTO dto);
 
-    List<ClientDTO> findAll();
+    ClientDTO update(Long id, ClientDTO dto);
+
+    ClientDTO getById(Long id);
+
+    List<ClientDTO> getAll();
 
     void delete(Long id);
 }

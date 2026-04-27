@@ -1,4 +1,4 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.RoleDTO;
 
@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface RoleService {
 
-    RoleDTO createRole(RoleDTO dto);
+    RoleDTO create(RoleDTO dto);
 
-    RoleDTO updateRole(Long id, RoleDTO dto);
+    RoleDTO update(Long id, RoleDTO dto);
 
-    void deleteRole(Long id);
+    void delete(Long id);
 
-    RoleDTO getRoleById(Long id);
+    RoleDTO getById(Long id);
 
-    List<RoleDTO> getAllRoles();
+    List<RoleDTO> getAll();
 
     RoleDTO assignPermission(Long roleId, Long permissionId);
 

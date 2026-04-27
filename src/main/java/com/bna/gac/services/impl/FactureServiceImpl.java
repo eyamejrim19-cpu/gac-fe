@@ -2,11 +2,15 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.FactureDTO;
 import com.bna.gac.entities.Facture;
+import com.bna.gac.entities.Mission;
+import com.bna.gac.exceptions.ResourceNotFoundException;
+import com.bna.gac.mapper.FactureMapper;
 import com.bna.gac.repositories.FactureRepository;
+import com.bna.gac.repositories.MissionRepository;
+import com.bna.gac.services.FactureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,81 +19,56 @@ import java.util.stream.Collectors;
 public class FactureServiceImpl implements FactureService {
 
     private final FactureRepository factureRepository;
-
-    // ENTITY -> DTO
-    private FactureDTO toDTO(Facture f) {
-        FactureDTO dto = new FactureDTO();
-        dto.setIdFacture(f.getIdFacture());
-        dto.setNumero(f.getNumero());
-        dto.setMontant(f.getMontant());
-        dto.setDateEmission(LocalDate.from(f.getDateEmission()));
-        dto.setTypeFacture(f.getTypeFacture());
-        dto.setStatut(f.getStatut());
-        return dto;
-    }
-
-    // DTO -> ENTITY
-    private Facture toEntity(FactureDTO dto) {
-        Facture f = new Facture();
-        f.setIdFacture(dto.getIdFacture());
-        f.setNumero(dto.getNumero());
-        f.setMontant(dto.getMontant());
-        f.setDateEmission(dto.getDateEmission().atStartOfDay());
-        f.setTypeFacture(dto.getTypeFacture());
-        f.setStatut(dto.getStatut());
-        return f;
-    }
+    private final MissionRepository missionRepository;
+    private final FactureMapper factureMapper;
 
     @Override
     public FactureDTO create(FactureDTO dto) {
-        Facture saved = factureRepository.save(toEntity(dto));
-        return toDTO(saved);
+        Facture facture = factureMapper.toEntity(dto);
+        facture.setMission(getMission(dto.getMissionId()));
+        return factureMapper.toDto(factureRepository.save(facture));
     }
 
     @Override
     public FactureDTO update(Long id, FactureDTO dto) {
-        Facture existing = factureRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Facture not found"));
-
+        Facture existing = findFacture(id);
         existing.setNumero(dto.getNumero());
-        existing.setMontant(dto.getMontant());
         existing.setDateEmission(dto.getDateEmission().atStartOfDay());
-        existing.setTypeFacture(dto.getTypeFacture());
+        existing.setMontant(dto.getMontant());
         existing.setStatut(dto.getStatut());
-
-        return toDTO(factureRepository.save(existing));
+        existing.setTypeFacture(dto.getTypeFacture());
+        existing.setMission(getMission(dto.getMissionId()));
+        return factureMapper.toDto(factureRepository.save(existing));
     }
 
     @Override
     public FactureDTO getById(Long id) {
-        Facture f = factureRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Facture not found"));
-
-        return toDTO(f);
+        return factureMapper.toDto(findFacture(id));
     }
 
     @Override
     public List<FactureDTO> getAll() {
         return factureRepository.findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(factureMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void delete(Long id) {
-        factureRepository.deleteById(id);
+        factureRepository.delete(findFacture(id));
     }
 
-    @Override
-    public Facture getFactureById(Long id) {
-        return null;
+    private Facture findFacture(Long id) {
+        return factureRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Facture not found"));
     }
 
-    public Facture saveFacture(Facture facture) {
-        return facture;
-    }
-
-    public void deleteFacture(Long id) {
+    private Mission getMission(Long missionId) {
+        if (missionId == null) {
+            return null;
+        }
+        return missionRepository.findById(missionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
     }
 }

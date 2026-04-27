@@ -1,48 +1,42 @@
 package com.bna.gac.services.impl;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import com.bna.gac.dto.MissionDTO;
+import com.bna.gac.entities.Affaire;
 import com.bna.gac.entities.Mission;
 import com.bna.gac.entities.Prestataire;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.MissionMapper;
+import com.bna.gac.repositories.AffaireRepository;
 import com.bna.gac.repositories.MissionRepository;
 import com.bna.gac.repositories.PrestataireRepository;
+import com.bna.gac.services.MissionService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MissionServiceImpl implements MissionService {
 
     private final MissionRepository missionRepository;
     private final PrestataireRepository prestataireRepository;
-    private  MissionMapper missionMapper;
-
-    public MissionServiceImpl(MissionRepository missionRepository, PrestataireRepository prestataireRepository) {
-        this.missionRepository = missionRepository;
-        this.prestataireRepository = prestataireRepository;
-    }
+    private final AffaireRepository affaireRepository;
+    private final MissionMapper missionMapper;
 
     @Override
     public MissionDTO create(MissionDTO dto) {
-
-        Prestataire prestataire = prestataireRepository.findById(dto.getPrestataireId())
-                .orElseThrow(() -> new RuntimeException("Prestataire not found"));
-
         Mission mission = missionMapper.toEntity(dto);
-        mission.setPrestataire(prestataire);
-
+        mission.setPrestataire(findPrestataire(dto.getPrestataireId()));
+        mission.setAffaire(findAffaire(dto.getAffaireId()));
         return missionMapper.toDto(missionRepository.save(mission));
     }
 
     @Override
     public MissionDTO update(Long id, MissionDTO dto) {
-
-        Mission mission = missionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
-
+        Mission mission = findMission(id);
         mission.setTypeMission(dto.getTypeMission());
         mission.setDateDebut(dto.getDateDebut().atStartOfDay());
         mission.setDateFin(dto.getDateFin().atStartOfDay());
@@ -50,9 +44,10 @@ public class MissionServiceImpl implements MissionService {
         mission.setResultat(dto.getResultat());
 
         if (dto.getPrestataireId() != null) {
-            Prestataire prestataire = prestataireRepository.findById(dto.getPrestataireId())
-                    .orElseThrow(() -> new RuntimeException("Prestataire not found"));
-            mission.setPrestataire(prestataire);
+            mission.setPrestataire(findPrestataire(dto.getPrestataireId()));
+        }
+        if (dto.getAffaireId() != null) {
+            mission.setAffaire(findAffaire(dto.getAffaireId()));
         }
 
         return missionMapper.toDto(missionRepository.save(mission));
@@ -60,9 +55,7 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public MissionDTO getById(Long id) {
-        Mission mission = missionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
-        return missionMapper.toDto(mission);
+        return missionMapper.toDto(findMission(id));
     }
 
     @Override
@@ -72,21 +65,21 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public void delete(Long id) {
-        if (!missionRepository.existsById(id)) {
-            throw new RuntimeException("Mission not found");
-        }
-        missionRepository.deleteById(id);
+        missionRepository.delete(findMission(id));
     }
 
-    public List<Mission> getAllMissions() {
-        return List.of();
+    private Mission findMission(Long id) {
+        return missionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
     }
 
-    public Remapper getMissionById(Long id) {
-        return null;
+    private Prestataire findPrestataire(Long prestataireId) {
+        return prestataireRepository.findById(prestataireId)
+                .orElseThrow(() -> new ResourceNotFoundException("Prestataire not found"));
     }
 
-    public List<Mission> getMissionsByConvention(boolean b) {
-        return List.of();
+    private Affaire findAffaire(Long affaireId) {
+        return affaireRepository.findById(affaireId)
+                .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }
 }

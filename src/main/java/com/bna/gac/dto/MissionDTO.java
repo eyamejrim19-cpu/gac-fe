@@ -15,4 +15,5 @@ public class MissionDTO {
     private String resultat;
 
     private Long prestataireId;
+    private Long affaireId;
 }

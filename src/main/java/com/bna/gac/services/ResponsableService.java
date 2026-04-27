@@ -1,15 +1,15 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.ResponsableDTO;
 import java.util.List;
 
 public interface ResponsableService {
 
-    ResponsableDTO save(ResponsableDTO dto);
+    ResponsableDTO create(ResponsableDTO dto);
 
-    List<ResponsableDTO> findAll();
+    List<ResponsableDTO> getAll();
 
-    ResponsableDTO findById(Long id);
+    ResponsableDTO getById(Long id);
 
     ResponsableDTO update(Long id, ResponsableDTO dto);
 

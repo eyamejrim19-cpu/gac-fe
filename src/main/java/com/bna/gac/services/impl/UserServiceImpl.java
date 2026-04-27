@@ -1,15 +1,19 @@
 package com.bna.gac.services.impl;
 
-
 import com.bna.gac.dto.RegisterRequestDTO;
 import com.bna.gac.entities.Role;
 import com.bna.gac.entities.User;
+import com.bna.gac.exceptions.BadRequestException;
+import com.bna.gac.exceptions.ResourceConflictException;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.repositories.RoleRepository;
 import com.bna.gac.repositories.UserRepository;
+import com.bna.gac.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,19 +27,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String saveUser(RegisterRequestDTO request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return "Username already exists";
+        if (request.getUsername() == null || request.getPassword() == null) {
+            throw new BadRequestException("Username and password required");
         }
 
-        Role role = roleRepository.findByName("USER")
-                .orElseGet(() -> roleRepository.save(new Role("USER")));
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new ResourceConflictException("Username already exists");
+        }
+
+        Role role = roleRepository.findByName("ROLE_USER")
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName("ROLE_USER");
+                    return roleRepository.save(newRole);
+                });
 
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(Set.of(role));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
 
         userRepository.save(user);
+
         return "User registered successfully";
     }
 
@@ -47,30 +63,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        userRepository.delete(getUserById(id));
     }
 
     @Override
     public User assignRoleToUser(String username, String roleName) {
-
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         user.getRoles().add(role);
-
         return userRepository.save(user);
     }
 
     @Override
     public User save(User user) {
-        return null;
+        return userRepository.save(user);
     }
 }

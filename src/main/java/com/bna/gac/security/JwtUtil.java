@@ -32,8 +32,8 @@ public class JwtUtil {
         signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64));
     }
 
-
     public String generateToken(UserDetails userDetails) {
+
         List<String> roles = userDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -43,27 +43,17 @@ public class JwtUtil {
                 .subject(userDetails.getUsername())
                 .claim("roles", roles)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(getSigningKey())
+                .expiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(signingKey)
                 .compact();
     }
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretBase64.getBytes());
-    }
-
     private Claims extractAllClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(signingKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (SignatureException e) {
-            throw new RuntimeException("Invalid JWT signature", e);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JWT", e);
-        }
+        return Jwts.parser()
+                .verifyWith(signingKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public String extractUsername(String token) {
@@ -71,12 +61,8 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String username) {
-        try {
-            Claims claims = extractAllClaims(token);
-            return claims.getSubject().equals(username)
-                    && !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
+        Claims claims = extractAllClaims(token);
+        return claims.getSubject().equals(username)
+                && !claims.getExpiration().before(new Date());
     }
 }

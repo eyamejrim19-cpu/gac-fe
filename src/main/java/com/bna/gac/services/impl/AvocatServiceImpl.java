@@ -2,35 +2,27 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.AvocatDTO;
 import com.bna.gac.entities.Avocat;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.AvocatMapper;
 import com.bna.gac.repositories.AvocatRepository;
+import com.bna.gac.services.AvocatService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AvocatServiceImpl implements AvocatService {
 
     private final AvocatRepository repository;
-    private  AvocatMapper mapper;
-
-    public AvocatServiceImpl(AvocatRepository repository) {
-        this.repository = repository;
-    }
+    private final AvocatMapper mapper;
 
     @Override
     public AvocatDTO create(AvocatDTO dto) {
-
-        Avocat entity = mapper.toEntity(dto);
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setEnabled(true);
-
-        Avocat saved = (Avocat) repository.save(entity);
-        return mapper.toDto(saved);
+        return mapper.toDto(repository.save(mapper.toEntity(dto)));
     }
 
     @Override
@@ -39,29 +31,25 @@ public class AvocatServiceImpl implements AvocatService {
     }
 
     @Override
-    public AvocatDTO getById(Long id) throws Throwable {
-        Avocat entity = (Avocat) repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Avocat not found"));
-        return mapper.toDto(entity);
+    public AvocatDTO getById(Long id) {
+        return mapper.toDto(findAvocat(id));
     }
 
     @Override
-    public AvocatDTO update(Long id, AvocatDTO dto) throws Throwable {
-
-        Avocat existing = (Avocat) repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Avocat not found"));
-
+    public AvocatDTO update(Long id, AvocatDTO dto) {
+        Avocat existing = findAvocat(id);
         existing.setBarreau(dto.getBarreau());
-        existing.setDomaine(dto.getDomaine());
-        existing.setUsername(dto.getUsername());
         existing.setEmail(dto.getEmail());
-
-        Avocat updated = (Avocat) repository.save(existing);
-        return mapper.toDto(updated);
+        return mapper.toDto(repository.save(existing));
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(findAvocat(id));
+    }
+
+    private Avocat findAvocat(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Avocat not found"));
     }
 }

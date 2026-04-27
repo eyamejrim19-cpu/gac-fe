@@ -3,8 +3,11 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.RoleDTO;
 import com.bna.gac.entities.Permission;
 import com.bna.gac.entities.Role;
+import com.bna.gac.exceptions.ResourceConflictException;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.repositories.PermissionRepository;
 import com.bna.gac.repositories.RoleRepository;
+import com.bna.gac.services.RoleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,54 +25,37 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionRepository permissionRepository;
 
     @Override
-    public RoleDTO createRole(RoleDTO dto) {
-
+    public RoleDTO create(RoleDTO dto) {
         if (roleRepository.existsByName(dto.getName())) {
-            throw new RuntimeException("Role already exists");
+            throw new ResourceConflictException("Role already exists");
         }
 
         Role role = new Role();
         role.setName(dto.getName());
         role.setDescription(dto.getDescription());
-
-        role = roleRepository.save(role);
-
-        return mapToDTO(role);
-    }
-
-    @Override
-    public RoleDTO updateRole(Long id, RoleDTO dto) {
-
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        role.setName(dto.getName());
-        role.setDescription(dto.getDescription());
-
         return mapToDTO(roleRepository.save(role));
     }
 
     @Override
-    public void deleteRole(Long id) {
-
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        roleRepository.delete(role);
+    public RoleDTO update(Long id, RoleDTO dto) {
+        Role role = findRole(id);
+        role.setName(dto.getName());
+        role.setDescription(dto.getDescription());
+        return mapToDTO(roleRepository.save(role));
     }
 
     @Override
-    public RoleDTO getRoleById(Long id) {
-
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        return mapToDTO(role);
+    public void delete(Long id) {
+        roleRepository.delete(findRole(id));
     }
 
     @Override
-    public List<RoleDTO> getAllRoles() {
+    public RoleDTO getById(Long id) {
+        return mapToDTO(findRole(id));
+    }
 
+    @Override
+    public List<RoleDTO> getAll() {
         return roleRepository.findAll()
                 .stream()
                 .map(this::mapToDTO)
@@ -78,34 +64,31 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO assignPermission(Long roleId, Long permissionId) {
-
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
-
+        Role role = findRole(roleId);
+        Permission permission = findPermission(permissionId);
         role.getPermissions().add(permission);
-
         return mapToDTO(roleRepository.save(role));
     }
 
     @Override
     public RoleDTO removePermission(Long roleId, Long permissionId) {
-
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
-
+        Role role = findRole(roleId);
+        Permission permission = findPermission(permissionId);
         role.getPermissions().remove(permission);
-
         return mapToDTO(roleRepository.save(role));
     }
 
-    private RoleDTO mapToDTO(Role role) {
+    private Role findRole(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+    }
 
+    private Permission findPermission(Long id) {
+        return permissionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+    }
+
+    private RoleDTO mapToDTO(Role role) {
         RoleDTO dto = new RoleDTO();
         dto.setIdRole(role.getIdRole());
         dto.setName(role.getName());
@@ -117,7 +100,6 @@ public class RoleServiceImpl implements RoleService {
                 .collect(Collectors.toSet());
 
         dto.setPermissionIds(permissionIds);
-
         return dto;
     }
 }

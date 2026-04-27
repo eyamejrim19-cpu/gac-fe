@@ -1,8 +1,7 @@
 package com.bna.gac.controllers;
 
 import com.bna.gac.dto.FactureDTO;
-import com.bna.gac.entities.Facture;
-import com.bna.gac.services.impl.FactureServiceImpl;
+import com.bna.gac.services.FactureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,40 +9,35 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/factures")
+@RequestMapping("/api/factures")
 @RequiredArgsConstructor
 public class FactureController {
 
-    private final FactureServiceImpl factureService;
+    private final FactureService factureService;
 
-    // GET : récupérer toutes les factures
     @GetMapping
     public List<FactureDTO> getAllFactures() {
         return factureService.getAll();
     }
 
-    // GET : récupérer facture par ID
     @GetMapping("/{id}")
-    public Facture getFactureById(@PathVariable Long id) {
-        return factureService.getFactureById(id);
+    public FactureDTO getFactureById(@PathVariable Long id) {
+        return factureService.getById(id);
     }
 
-    // POST : ajouter facture
     @PostMapping
-    public Facture createFacture(@RequestBody Facture facture) {
-        return factureService.saveFacture(facture);
+    public FactureDTO createFacture(@RequestBody FactureDTO facture) {
+        return factureService.create(facture);
     }
 
-    // PUT : modifier facture
     @PutMapping("/{id}")
-    public Facture updateFacture(@PathVariable Long id, @RequestBody Facture facture) {
+    public FactureDTO updateFacture(@PathVariable Long id, @RequestBody FactureDTO facture) {
         facture.setIdFacture(id);
-        return factureService.saveFacture(facture);
+        return factureService.update(id, facture);
     }
 
-    // DELETE : supprimer facture
     @DeleteMapping("/{id}")
     public void deleteFacture(@PathVariable Long id) {
-        factureService.deleteFacture(id);
+        factureService.delete(id);
     }
 }

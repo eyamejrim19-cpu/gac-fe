@@ -2,35 +2,27 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.HuissierDTO;
 import com.bna.gac.entities.Huissier;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.HuissierMapper;
 import com.bna.gac.repositories.HuissierRepository;
+import com.bna.gac.services.HuissierService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class HuissierServiceImpl implements HuissierService {
 
     private final HuissierRepository repository;
-    private  HuissierMapper mapper;
-
-    public HuissierServiceImpl(HuissierRepository repository) {
-        this.repository = repository;
-    }
+    private final HuissierMapper mapper;
 
     @Override
     public HuissierDTO create(HuissierDTO dto) {
-
-        Huissier entity = mapper.toEntity(dto);
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setEnabled(true);
-
-        Huissier saved = repository.save(entity);
-        return mapper.toDto(saved);
+        return mapper.toDto(repository.save(mapper.toEntity(dto)));
     }
 
     @Override
@@ -40,27 +32,23 @@ public class HuissierServiceImpl implements HuissierService {
 
     @Override
     public HuissierDTO getById(Long id) {
-        Huissier entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Huissier not found"));
-        return mapper.toDto(entity);
+        return mapper.toDto(findHuissier(id));
     }
 
     @Override
     public HuissierDTO update(Long id, HuissierDTO dto) {
-
-        Huissier existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Huissier not found"));
-
-        existing.setCabinet(dto.getCabinet());
-        existing.setUsername(dto.getUsername());
+        Huissier existing = findHuissier(id);
         existing.setEmail(dto.getEmail());
-
-        Huissier updated = repository.save(existing);
-        return mapper.toDto(updated);
+        return mapper.toDto(repository.save(existing));
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.delete(findHuissier(id));
+    }
+
+    private Huissier findHuissier(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Huissier not found"));
     }
 }

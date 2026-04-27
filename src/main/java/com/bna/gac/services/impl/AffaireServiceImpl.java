@@ -2,44 +2,46 @@ package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.AffaireDTO;
 import com.bna.gac.entities.Affaire;
-import com.bna.gac.entities.Client;
+import com.bna.gac.entities.DossierContentieux;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.AffaireMapper;
 import com.bna.gac.repositories.AffaireRepository;
-import com.bna.gac.repositories.ClientRepository;
+import com.bna.gac.repositories.DossierContentieuxRepository;
+import com.bna.gac.services.AffaireService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AffaireServiceImpl implements AffaireService {
 
     private final AffaireRepository affaireRepository;
-    private final ClientRepository clientRepository;
-    private  AffaireMapper mapper;
-
-    public AffaireServiceImpl(AffaireRepository affaireRepository, ClientRepository clientRepository) {
-        this.affaireRepository = affaireRepository;
-        this.clientRepository = clientRepository;
-    }
+    private final DossierContentieuxRepository dossierRepository;
+    private final AffaireMapper mapper;
 
     @Override
     public AffaireDTO create(AffaireDTO dto) {
-
         Affaire affaire = mapper.toEntity(dto);
+        affaire.setDossier(findDossier(dto.getDossierId()));
+        return mapper.toDto(affaireRepository.save(affaire));
+    }
 
-        Client client = clientRepository.findById(dto.getClientId())
-                .orElseThrow(() -> new RuntimeException("Client not found"));
-
-        affaire.setClient(client);
-        affaire.setDateCreation(LocalDate.now());
-
-        Affaire saved = affaireRepository.save(affaire);
-
-        return mapper.toDto(saved);
+    @Override
+    public AffaireDTO update(Long id, AffaireDTO dto) {
+        Affaire affaire = findAffaire(id);
+        affaire.setNumeroProcedure(dto.getNumeroProcedure());
+        affaire.setStatut(dto.getStatut());
+        affaire.setTribunal(dto.getTribunal());
+        affaire.setJugement(dto.getJugement());
+        affaire.setDateDebut(dto.getDateDebut() == null ? null : dto.getDateDebut().atStartOfDay());
+        if (dto.getDossierId() != null) {
+            affaire.setDossier(findDossier(dto.getDossierId()));
+        }
+        return mapper.toDto(affaireRepository.save(affaire));
     }
 
     @Override
@@ -49,13 +51,21 @@ public class AffaireServiceImpl implements AffaireService {
 
     @Override
     public AffaireDTO getById(Long id) {
-        Affaire affaire = affaireRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Affaire not found"));
-        return mapper.toDto(affaire);
+        return mapper.toDto(findAffaire(id));
     }
 
     @Override
     public void delete(Long id) {
-        affaireRepository.deleteById(id);
+        affaireRepository.delete(findAffaire(id));
+    }
+
+    private Affaire findAffaire(Long id) {
+        return affaireRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
+    }
+
+    private DossierContentieux findDossier(Long id) {
+        return dossierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dossier not found"));
     }
 }

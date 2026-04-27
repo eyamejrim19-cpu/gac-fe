@@ -10,12 +10,13 @@ import java.time.LocalDate;
 public class RisqueDTO {
 
     private Long id;
+    private Long dossierId;
 
     private Double montantPrincipal;
 
     private Double montantInteret;
 
-    private Double montantTotale;
+    private Double montantTotal;
 
     private Double tauxInteret;
 
@@ -23,11 +24,7 @@ public class RisqueDTO {
 
     private LocalDate dateContrat;
 
-    private LocalDate dateDebloquage;
+    private LocalDate dateDeblocage;
 
     private LocalDate dateEcheance;
-
-    public Long getDossierId() {
-        return null;
-    }
 }

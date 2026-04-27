@@ -1,21 +1,35 @@
 package com.bna.gac.mapper;
 
-import org.mapstruct.Mapper;
-import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.dto.DossierContentieuxDTO;
-import org.springframework.stereotype.Service;
+import com.bna.gac.entities.DossierContentieux;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-@Mapper(componentModel = "spring")
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface DossierContentieuxMapper {
 
-    DossierContentieuxDTO toDto(DossierContentieux dossier);
+    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "chargeDossier.id", target = "chargeDossierId")
+    DossierContentieuxDTO toDto(DossierContentieux entity);
 
+    @Mapping(source = "clientId", target = "client.id")
+    @Mapping(target = "chargeDossier", ignore = true)
+    @Mapping(target = "affaires", ignore = true)
+    @Mapping(target = "risques", ignore = true)
     DossierContentieux toEntity(DossierContentieuxDTO dto);
 
-    DossierContentieuxDTO toDTO(DossierContentieux d);
+    List<DossierContentieuxDTO> toDtoList(List<DossierContentieux> list);
 
-    List<DossierContentieuxDTO> toDTOList(List<DossierContentieux> all);
+    default LocalDate map(LocalDateTime value) {
+        return value == null ? null : value.toLocalDate();
+    }
 
-    List<DossierContentieuxDTO> toDtoList(List<DossierContentieux> all);
+    default LocalDateTime map(LocalDate value) {
+        return value == null ? null : value.atStartOfDay();
+    }
 }

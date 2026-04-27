@@ -29,7 +29,6 @@ public class Prestataire {
     private TypePrestataire typePrestataire;
 
     public boolean getActif() {
-
-        return false;
+        return actif;
     }
 }

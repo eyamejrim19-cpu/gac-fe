@@ -16,11 +16,26 @@ public class RisqueController {
 
     @PostMapping
     public RisqueDTO create(@RequestBody RisqueDTO dto) {
-        return service.save(dto);
+        return service.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    public RisqueDTO update(@PathVariable Long id, @RequestBody RisqueDTO dto) {
+        return service.update(id, dto);
     }
 
     @GetMapping
     public List<RisqueDTO> getAll() {
-        return service.findAll();
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public RisqueDTO getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

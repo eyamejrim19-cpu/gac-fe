@@ -10,10 +10,10 @@ import java.time.LocalDate;
 public class AffaireDTO {
 
     private Long idAffaire;
-    private String reference;
-    private String typeAffaire;
+    private String numeroProcedure;
     private String statut;
-    private LocalDate dateCreation;
-
-    private Long clientId;
+    private String tribunal;
+    private String jugement;
+    private LocalDate dateDebut;
+    private Long dossierId;
 }

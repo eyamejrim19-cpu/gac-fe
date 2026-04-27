@@ -1,45 +1,41 @@
 package com.bna.gac.controllers;
 
-import com.bna.gac.entities.Mission;
-
-import com.bna.gac.services.impl.MissionService;
-import com.bna.gac.services.impl.MissionServiceImpl;
-import org.springframework.http.ResponseEntity;
+import com.bna.gac.dto.MissionDTO;
+import com.bna.gac.services.MissionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/missions")
+@RequiredArgsConstructor
 public class MissionController {
 
-    private final MissionServiceImpl missionService;
+    private final MissionService missionService;
 
-    public MissionController(MissionService missionService) {
-        this.missionService = (MissionServiceImpl) missionService;
-    }
-
-    // Get all
     @GetMapping
-    public List<Mission> getAllMissions() {
-        return missionService.getAllMissions();
-    }
- /*
-    // Get by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Mission> getMissionById(@PathVariable Long id) {
-        return missionService.getMissionById(id)
-                .map(ResponseEntity.ok().toString());}
-*/
-    // Get conventionnées
-    @GetMapping("/conventionnees")
-    public List<Mission> getConventionnees() {
-        return missionService.getMissionsByConvention(true);
+    public List<MissionDTO> getAllMissions() {
+        return missionService.getAll();
     }
 
-    // Get non conventionnées
-    @GetMapping("/non-conventionnees")
-    public List<Mission> getNonConventionnees() {
-        return missionService.getMissionsByConvention(false);
+    @GetMapping("/{id}")
+    public MissionDTO getMissionById(@PathVariable Long id) {
+        return missionService.getById(id);
+    }
+
+    @PostMapping
+    public MissionDTO createMission(@RequestBody MissionDTO dto) {
+        return missionService.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    public MissionDTO updateMission(@PathVariable Long id, @RequestBody MissionDTO dto) {
+        return missionService.update(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteMission(@PathVariable Long id) {
+        missionService.delete(id);
     }
 }

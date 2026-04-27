@@ -1,4 +1,4 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.AvocatDTO;
 
@@ -10,9 +10,9 @@ public interface AvocatService {
 
     List<AvocatDTO> getAll();
 
-    AvocatDTO getById(Long id) throws Throwable;
+    AvocatDTO getById(Long id);
 
-    AvocatDTO update(Long id, AvocatDTO dto) throws Throwable;
+    AvocatDTO update(Long id, AvocatDTO dto);
 
     void delete(Long id);
 }

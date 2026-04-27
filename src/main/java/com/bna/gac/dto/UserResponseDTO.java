@@ -1,4 +1,4 @@
-package com.bna.gac.dtos;
+package com.bna.gac.dto;
 
 import lombok.Data;
 

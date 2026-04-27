@@ -1,4 +1,4 @@
-package com.bna.gac.services.impl;
+package com.bna.gac.services;
 
 import com.bna.gac.dto.ChargeDossierDTO;
 
@@ -8,9 +8,12 @@ public interface ChargeDossierService {
 
     ChargeDossierDTO create(ChargeDossierDTO dto);
 
+    ChargeDossierDTO update(Long id, ChargeDossierDTO dto);
+
     List<ChargeDossierDTO> getAll();
 
     ChargeDossierDTO getById(Long id);
 
     void delete(Long id);
 }
+

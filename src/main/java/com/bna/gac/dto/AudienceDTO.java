@@ -14,6 +14,6 @@ public class AudienceDTO {
     private String typeAudience;
     private String decision;
     private String observation;
-
-    private Long dossierId;
+    private String commentaire;
+    private Long affaireId;
 }

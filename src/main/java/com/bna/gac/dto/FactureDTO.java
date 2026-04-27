@@ -15,5 +15,4 @@ public class FactureDTO {
     private String typeFacture;
 
     private Long missionId;
-    private Long prestataireId;
 }

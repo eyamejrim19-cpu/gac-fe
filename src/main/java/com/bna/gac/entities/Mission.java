@@ -30,10 +30,10 @@ public class Mission {
     @JoinColumn(name = "affaire_id")
     private Affaire affaire;
 
+    @ManyToOne
+    @JoinColumn(name = "prestataire_id")
+    private Prestataire prestataire;
+
     @OneToMany(mappedBy = "mission")
     private Set<Facture> factures;
-
-    public void setPrestataire(Prestataire prestataire) {
-
-    }
 }

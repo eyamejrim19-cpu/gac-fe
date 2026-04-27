@@ -1,6 +1,6 @@
 package com.bna.gac.controllers;
 
-import com.bna.gac.services.impl.DossierContentieuxService;
+import com.bna.gac.services.DossierContentieuxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.bna.gac.dto.DossierContentieuxDTO;
@@ -13,14 +13,33 @@ import java.util.List;
 public class DossierController {
 
     private final DossierContentieuxService service;
+    @GetMapping("/recent")
+    public List<DossierContentieuxDTO> getRecent(@RequestParam int limit) {
+        return service.findRecent(limit);
+    }
 
     @PostMapping
     public DossierContentieuxDTO create(@RequestBody DossierContentieuxDTO dto) {
-        return service.save(dto);
+        return service.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    public DossierContentieuxDTO update(@PathVariable Long id, @RequestBody DossierContentieuxDTO dto) {
+        return service.update(id, dto);
     }
 
     @GetMapping
     public List<DossierContentieuxDTO> getAll() {
-        return service.findAll();
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public DossierContentieuxDTO getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
