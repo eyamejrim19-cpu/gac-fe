@@ -3,6 +3,9 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.ClientDTO;
 import com.bna.gac.dto.StatusUpdateDTO;
 import com.bna.gac.entities.Client;
+import com.bna.gac.exceptions.BadRequestException;
+import com.bna.gac.exceptions.ResourceConflictException;
+import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.ClientMapper;
 import com.bna.gac.repositories.ClientRepository;
 import com.bna.gac.services.ClientService;
@@ -59,8 +62,15 @@ public class ClientServiceImpl implements ClientService {
     public ClientDTO create(ClientDTO dto) {
 
         if (dto.getNom() == null || dto.getTel() == null || dto.getEmail() == null) {
-            throw new RuntimeException("Nom, tel, email sont obligatoires");
+            throw new BadRequestException("Nom, tel, email sont obligatoires");
         }
+
+        // Validate and normalise typeClient
+        String type = resolveAndValidateType(dto.getTypeClient());
+        dto.setTypeClient(type);
+
+        // Central identifier gate: enforces type-based rules and rejects mismatches
+        validateIdentifierForType(type, dto.getCin(), dto.getRne());
 
         // Tel validation: exactly 8 digits, starting with 2, 4, 5, 7, or 9
         validateTel(dto.getTel());
@@ -73,16 +83,6 @@ public class ClientServiceImpl implements ClientService {
         // Duplicate check — each field reported separately
         checkDuplicatesForCreate(dto);
 
-        // RNE validation: required for MORALE clients, must be exactly 7 digits
-        if ("MORALE".equalsIgnoreCase(dto.getTypeClient())) {
-            validateRne(dto.getRne());
-        }
-
-        // CIN validation: required for PHYSIQUE clients, must be exactly 8 digits
-        if ("PHYSIQUE".equalsIgnoreCase(dto.getTypeClient())) {
-            validateCin(dto.getCin());
-        }
-
         Client c = mapper.toEntity(dto);
         return mapper.toDto(repo.save(c));
     }
@@ -92,67 +92,85 @@ public class ClientServiceImpl implements ClientService {
     public ClientDTO update(Long id, ClientDTO dto) {
 
         Client c = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
 
-        // RNE validation: only validate when a new RNE value is being provided
-        if (dto.getRne() != null) {
-            String targetType = dto.getTypeClient() != null ? dto.getTypeClient() : c.getTypeClient();
-            if ("MORALE".equalsIgnoreCase(targetType)) {
-                validateRne(dto.getRne());
+        // Determine the effective type after this update
+        String effectiveType = dto.getTypeClient() != null
+                ? resolveAndValidateType(dto.getTypeClient())
+                : c.getTypeClient();
+
+        if (dto.getTypeClient() != null) {
+            dto.setTypeClient(effectiveType);
+        }
+
+        boolean cinProvided = dto.getCin() != null && !dto.getCin().isBlank();
+        boolean rneProvided = dto.getRne() != null && !dto.getRne().isBlank();
+
+        // Reject cross-type mismatches and validate the supplied identifier
+        if ("PHYSIQUE".equalsIgnoreCase(effectiveType)) {
+            if (rneProvided) {
+                throw new BadRequestException(
+                        "Un client PHYSIQUE ne peut pas avoir de RNE. Utilisez le champ CIN.");
             }
-        }
+            if (cinProvided) validateCin(dto.getCin());
 
-        // CIN validation: only validate when a new CIN value is being provided
-        if (dto.getCin() != null) {
-            String targetType = dto.getTypeClient() != null ? dto.getTypeClient() : c.getTypeClient();
-            if ("PHYSIQUE".equalsIgnoreCase(targetType)) {
-                validateCin(dto.getCin());
+        } else if ("MORALE".equalsIgnoreCase(effectiveType)) {
+            if (cinProvided) {
+                throw new BadRequestException(
+                        "Un client MORALE ne peut pas avoir de CIN. Utilisez le champ RNE.");
             }
+            if (rneProvided) validateRne(dto.getRne());
         }
 
-        // Tel validation: only validate when a new tel value is being provided
-        if (dto.getTel() != null) {
-            validateTel(dto.getTel());
-        }
+        // Tel validation: only when a new value is provided
+        if (dto.getTel() != null) validateTel(dto.getTel());
 
-        // Email validation: only validate when a new email value is being provided
-        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
-            validateEmail(dto.getEmail());
-        }
+        // Email validation: only when a new value is provided
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) validateEmail(dto.getEmail());
 
         // Duplicate check — each field reported separately, excluding current record
         checkDuplicatesForUpdate(id, dto);
 
-        // Partial update — only overwrite fields that are explicitly provided in the DTO.
-        // This prevents a partial payload (e.g. { active: false }) from wiping other fields.
-        if (dto.getNom() != null)        c.setNom(dto.getNom());
-        if (dto.getPrenom() != null)     c.setPrenom(dto.getPrenom());
-        if (dto.getEmail() != null)      c.setEmail(dto.getEmail());
-        if (dto.getTel() != null)        c.setTel(dto.getTel());
-        if (dto.getCin() != null)        c.setCin(dto.getCin());
-        if (dto.getRne() != null)        c.setRne(dto.getRne());
-        if (dto.getAdresse() != null)    c.setAdresse(dto.getAdresse());
-        if (dto.getTypeClient() != null) c.setTypeClient(dto.getTypeClient());
-        if (dto.getActive() != null)     c.setActive(dto.getActive());
+        // Partial update — only overwrite fields that are explicitly provided
+        if (dto.getNom() != null)     c.setNom(dto.getNom());
+        if (dto.getPrenom() != null)  c.setPrenom(dto.getPrenom());
+        if (dto.getEmail() != null)   c.setEmail(dto.getEmail());
+        if (dto.getTel() != null)     c.setTel(dto.getTel());
+        if (dto.getAdresse() != null) c.setAdresse(dto.getAdresse());
+        if (dto.getActive() != null)  c.setActive(dto.getActive());
 
-        log.info("update client id={} active={}", id, c.getActive());
+        // Apply type change and enforce identifier isolation
+        if (dto.getTypeClient() != null) {
+            c.setTypeClient(effectiveType);
+            if ("PHYSIQUE".equalsIgnoreCase(effectiveType)) {
+                c.setRne(null);                          // clear the now-invalid identifier
+                if (cinProvided) c.setCin(dto.getCin());
+            } else if ("MORALE".equalsIgnoreCase(effectiveType)) {
+                c.setCin(null);                          // clear the now-invalid identifier
+                if (rneProvided) c.setRne(dto.getRne());
+            }
+        } else {
+            // Type unchanged — update only the applicable identifier
+            if ("PHYSIQUE".equalsIgnoreCase(effectiveType) && cinProvided) c.setCin(dto.getCin());
+            if ("MORALE".equalsIgnoreCase(effectiveType)   && rneProvided) c.setRne(dto.getRne());
+        }
+
+        log.info("update client id={} type={} active={}", id, effectiveType, c.getActive());
         return mapper.toDto(repo.save(c));
     }
 
     /**
-     * Dedicated status-only update. Loads the entity, touches ONLY the active
-     * field, and saves. No other field is read from the request or written to
-     * the database.
+     * Dedicated status-only update. Touches ONLY the active field.
      */
     @Override
     @Transactional
     public ClientDTO updateStatus(Long id, StatusUpdateDTO dto) {
         if (dto.getActive() == null) {
-            throw new RuntimeException("Le champ 'active' est obligatoire");
+            throw new BadRequestException("Le champ 'active' est obligatoire");
         }
         log.info("updateStatus client id={} active={}", id, dto.getActive());
         Client c = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
         c.setActive(dto.getActive());
         return mapper.toDto(repo.save(c));
     }
@@ -160,17 +178,15 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     public void delete(Long id) {
-
         Client c = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
         repo.delete(c);
     }
 
     @Override
     public ClientDTO getById(Long id) {
         return mapper.toDto(repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id)));
     }
 
     @Override
@@ -178,7 +194,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientDTO deactivate(Long id) {
         log.info("deactivate client id={}", id);
         Client c = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
         c.setActive(false);
         return mapper.toDto(repo.save(c));
     }
@@ -188,7 +204,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientDTO reactivate(Long id) {
         log.info("reactivate client id={}", id);
         Client c = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
         c.setActive(true);
         return mapper.toDto(repo.save(c));
     }
@@ -196,76 +212,100 @@ public class ClientServiceImpl implements ClientService {
     // ================= HELPERS =================
 
     /**
-     * RNE must be exactly 7 digits (0–9). No letters, spaces, or special chars.
-     * Throws RuntimeException with the standard message if invalid.
+     * Validates and normalises typeClient.
+     * Accepted values (case-insensitive): "PHYSIQUE", "MORALE".
      */
+    private String resolveAndValidateType(String typeClient) {
+        if (typeClient == null || typeClient.isBlank()) {
+            return "PHYSIQUE"; // default
+        }
+        String upper = typeClient.trim().toUpperCase();
+        if (!upper.equals("PHYSIQUE") && !upper.equals("MORALE")) {
+            throw new BadRequestException(
+                    "Type client invalide: '" + typeClient + "'. Valeurs acceptées: PHYSIQUE, MORALE.");
+        }
+        return upper;
+    }
+
+    /**
+     * Central identifier gate — called on every create.
+     *   PHYSIQUE: CIN required (8 digits), RNE must be absent
+     *   MORALE:   RNE required (7 digits), CIN must be absent
+     */
+    private void validateIdentifierForType(String type, String cin, String rne) {
+        boolean cinPresent = cin != null && !cin.isBlank();
+        boolean rnePresent = rne != null && !rne.isBlank();
+
+        if ("PHYSIQUE".equalsIgnoreCase(type)) {
+            if (rnePresent) {
+                throw new BadRequestException(
+                        "Un client PHYSIQUE ne peut pas avoir de RNE. Utilisez le champ CIN.");
+            }
+            validateCin(cin);
+        } else if ("MORALE".equalsIgnoreCase(type)) {
+            if (cinPresent) {
+                throw new BadRequestException(
+                        "Un client MORALE ne peut pas avoir de CIN. Utilisez le champ RNE.");
+            }
+            validateRne(rne);
+        }
+    }
+
+    /** RNE must be exactly 7 digits (0–9). */
     private void validateRne(String rne) {
         if (rne == null || !rne.matches("^[0-9]{7}$")) {
-            throw new RuntimeException("Le RNE doit contenir exactement 7 chiffres.");
+            throw new BadRequestException("Le RNE doit contenir exactement 7 chiffres.");
         }
     }
 
-    /**
-     * CIN must be exactly 8 digits (0–9). No letters, spaces, or special chars.
-     * Throws RuntimeException with the standard message if invalid.
-     */
+    /** CIN must be exactly 8 digits (0–9). */
     private void validateCin(String cin) {
         if (cin == null || !cin.matches("^[0-9]{8}$")) {
-            throw new RuntimeException("La CIN doit contenir exactement 8 chiffres.");
+            throw new BadRequestException("La CIN doit contenir exactement 8 chiffres.");
         }
     }
 
-    /**
-     * Tunisian phone number: exactly 8 digits, first digit must be 2, 4, 5, 7, or 9.
-     * No letters, spaces, or special characters allowed.
-     * Throws RuntimeException with the standard message if invalid.
-     */
+    /**  phone: exactly 8 digits, first digit 2/4/5/7/9. */
     private void validateTel(String tel) {
         if (tel == null || !tel.matches("^[24579][0-9]{7}$")) {
-            throw new RuntimeException("Le numéro de téléphone doit contenir exactement 8 chiffres valides.");
+            throw new BadRequestException(
+                    "Le numéro de téléphone doit contenir exactement 8 chiffres valides.");
         }
     }
 
-    /**
-     * Email must contain exactly one "@", at least one character before and after it,
-     * a "." in the domain part, and no spaces.
-     * Throws RuntimeException with the standard message if invalid.
-     */
+    /** Email: must contain @, dot in domain, no spaces. */
     private void validateEmail(String email) {
         if (email == null || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-            throw new RuntimeException("Adresse email invalide.");
+            throw new BadRequestException("Adresse email invalide.");
         }
     }
 
-    /**
-     * Checks for duplicate tel / email / cin / rne on CREATE.
-     * Each conflicting field produces its own specific error message.
-     * All conflicts are collected and thrown together so the caller sees every issue at once.
-     */
+    /** Duplicate check on CREATE — collects all conflicts before throwing. */
     private void checkDuplicatesForCreate(ClientDTO dto) {
         List<String> errors = new java.util.ArrayList<>();
 
         if (dto.getTel() != null)
-            repo.findByTel(dto.getTel()).ifPresent(c -> errors.add("Ce numéro de téléphone est déjà utilisé."));
+            repo.findByTel(dto.getTel())
+                .ifPresent(c -> errors.add("Ce numéro de téléphone est déjà utilisé."));
 
         if (dto.getEmail() != null && !dto.getEmail().isBlank())
-            repo.findByEmail(dto.getEmail()).ifPresent(c -> errors.add("Cette adresse email est déjà utilisée."));
+            repo.findByEmail(dto.getEmail())
+                .ifPresent(c -> errors.add("Cette adresse email est déjà utilisée."));
 
         if (dto.getCin() != null && !dto.getCin().isBlank())
-            repo.findByCin(dto.getCin()).ifPresent(c -> errors.add("Cette CIN est déjà utilisée."));
+            repo.findByCin(dto.getCin())
+                .ifPresent(c -> errors.add("Cette CIN est déjà utilisée."));
 
         if (dto.getRne() != null && !dto.getRne().isBlank())
-            repo.findByRne(dto.getRne()).ifPresent(c -> errors.add("Ce RNE est déjà utilisé."));
+            repo.findByRne(dto.getRne())
+                .ifPresent(c -> errors.add("Ce RNE est déjà utilisé."));
 
         if (!errors.isEmpty()) {
-            throw new RuntimeException(String.join(" | ", errors));
+            throw new ResourceConflictException(String.join(" | ", errors));
         }
     }
 
-    /**
-     * Checks for duplicate tel / email / cin / rne on UPDATE, excluding the record being updated.
-     * Each conflicting field produces its own specific error message.
-     */
+    /** Duplicate check on UPDATE — excludes the record being updated. */
     private void checkDuplicatesForUpdate(Long currentId, ClientDTO dto) {
         List<String> errors = new java.util.ArrayList<>();
 
@@ -290,7 +330,7 @@ public class ClientServiceImpl implements ClientService {
                 .ifPresent(c -> errors.add("Ce RNE est déjà utilisé."));
 
         if (!errors.isEmpty()) {
-            throw new RuntimeException(String.join(" | ", errors));
+            throw new ResourceConflictException(String.join(" | ", errors));
         }
     }
 }
