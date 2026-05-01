@@ -30,7 +30,7 @@ public class DossierContentieux {
     private ChargeDossier chargeDossier;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "id_client")
     private Client client;
 
     @OneToMany(mappedBy = "dossier", cascade = CascadeType.ALL)

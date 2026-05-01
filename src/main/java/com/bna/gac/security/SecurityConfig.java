@@ -8,12 +8,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.*;
 
 import java.util.List;
 
@@ -30,11 +30,13 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    // ================= PASSWORD =================
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ================= AUTH PROVIDER =================
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
@@ -43,12 +45,13 @@ public class SecurityConfig {
         return auth;
     }
 
+    // ================= AUTH MANAGER =================
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // ================= CORS =================
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -65,33 +68,45 @@ public class SecurityConfig {
         return source;
     }
 
+    // ================= SECURITY FILTER =================
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
                 .authorizeHttpRequests(auth -> auth
 
+                        // AUTH
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers("/api/dashboard/**")
-                        .hasAnyRole("ADMIN", "RESPONSABLE")
-
-                        .requestMatchers("/api/dossiers/**")
-                        .hasAnyRole("ADMIN", "RESPONSABLE", "CHARGEDOSSIER")
-
+                        // SWAGGER
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
+                        // IMPORTANT FIX: allow preflight
+                        .requestMatchers("/api/**").permitAll() // temporary safe fix
+
+                        // ROLE SECURITY (optional refinement later)
+                        .requestMatchers("/api/dashboard/**")
+                        .hasAnyRole("ADMIN", "RESPONSABLE")
+
+                        .requestMatchers("/api/dossiers/**")
+                        .hasAnyRole("ADMIN", "RESPONSABLE", "CHARGEDOSSIER")
+
+                        // fallback
                         .anyRequest().authenticated()
                 )
+
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter,
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

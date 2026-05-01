@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
@@ -32,11 +30,12 @@ public class JwtUtil {
         signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64));
     }
 
+    // ================= TOKEN GENERATION =================
     public String generateToken(UserDetails userDetails) {
 
         List<String> roles = userDetails.getAuthorities()
                 .stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(auth -> auth.getAuthority().replace("ROLE_", ""))
                 .toList();
 
         return Jwts.builder()
@@ -48,6 +47,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // ================= CLAIMS =================
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
@@ -60,9 +60,26 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<String> extractRoles(String token) {
+        Object roles = extractAllClaims(token).get("roles");
+
+        if (roles instanceof List<?>) {
+            return (List<String>) roles;
+        }
+
+        return List.of();
+    }
+
     public boolean isTokenValid(String token, String username) {
-        Claims claims = extractAllClaims(token);
-        return claims.getSubject().equals(username)
-                && !claims.getExpiration().before(new Date());
+        try {
+            Claims claims = extractAllClaims(token);
+
+            return claims.getSubject().equals(username)
+                    && claims.getExpiration().after(new Date());
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
