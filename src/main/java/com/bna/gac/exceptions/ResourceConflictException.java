@@ -6,3 +6,4 @@ public class ResourceConflictException extends RuntimeException {
         super(message);
     }
 }
+

@@ -69,3 +69,4 @@ public class AudienceServiceImpl implements AudienceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }
 }
+

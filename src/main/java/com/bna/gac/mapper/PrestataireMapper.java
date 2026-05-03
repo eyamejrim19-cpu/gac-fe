@@ -34,3 +34,4 @@ public interface PrestataireMapper {
         return value == null || value.isBlank() ? null : TypePrestataire.valueOf(value);
     }
 }
+

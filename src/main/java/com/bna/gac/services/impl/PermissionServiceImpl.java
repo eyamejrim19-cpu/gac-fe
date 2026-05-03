@@ -4,6 +4,7 @@ import com.bna.gac.dto.PermissionDTO;
 import com.bna.gac.entities.Permission;
 import com.bna.gac.exceptions.ResourceConflictException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
+import com.bna.gac.mapper.PermissionMapper;
 import com.bna.gac.repositories.PermissionRepository;
 import com.bna.gac.services.PermissionService;
 import jakarta.transaction.Transactional;
@@ -18,6 +19,7 @@ import java.util.List;
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
+    private final PermissionMapper permissionMapper;
 
     @Override
     public PermissionDTO create(PermissionDTO dto) {
@@ -25,11 +27,9 @@ public class PermissionServiceImpl implements PermissionService {
             throw new ResourceConflictException("Permission already exists");
         }
 
-        Permission permission = new Permission();
-        permission.setCode(dto.getCode());
-        permission.setDescription(dto.getDescription());
-
-        return mapToDTO(permissionRepository.save(permission));
+        Permission permission = permissionMapper.toEntity(dto);
+        Permission saved = permissionRepository.save(permission);
+        return permissionMapper.toDto(saved);
     }
 
     @Override
@@ -37,7 +37,8 @@ public class PermissionServiceImpl implements PermissionService {
         Permission permission = findPermission(id);
         permission.setCode(dto.getCode());
         permission.setDescription(dto.getDescription());
-        return mapToDTO(permissionRepository.save(permission));
+        Permission saved = permissionRepository.save(permission);
+        return permissionMapper.toDto(saved);
     }
 
     @Override
@@ -47,27 +48,19 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO getById(Long id) {
-        return mapToDTO(findPermission(id));
+        return permissionMapper.toDto(findPermission(id));
     }
 
     @Override
     public List<PermissionDTO> getAll() {
         return permissionRepository.findAll()
                 .stream()
-                .map(this::mapToDTO)
+                .map(permissionMapper::toDto)
                 .toList();
     }
 
     private Permission findPermission(Long id) {
         return permissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
-    }
-
-    private PermissionDTO mapToDTO(Permission permission) {
-        PermissionDTO dto = new PermissionDTO();
-        dto.setIdPermission(permission.getIdPermission());
-        dto.setCode(permission.getCode());
-        dto.setDescription(permission.getDescription());
-        return dto;
     }
 }

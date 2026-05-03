@@ -23,3 +23,4 @@ public interface ChargeDossierMapper {
 
     List<ChargeDossierDTO> toDtoList(List<ChargeDossier> list);
 }
+

@@ -11,3 +11,4 @@ public class Avocat extends Prestataire {
 
     private String barreau;
 }
+

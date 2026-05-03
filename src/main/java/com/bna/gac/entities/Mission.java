@@ -37,3 +37,4 @@ public class Mission {
     @OneToMany(mappedBy = "mission")
     private Set<Facture> factures;
 }
+

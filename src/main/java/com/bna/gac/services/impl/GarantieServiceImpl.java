@@ -3,6 +3,7 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.GarantieDTO;
 import com.bna.gac.entities.Garantie;
 import com.bna.gac.entities.Risque;
+import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.GarantieMapper;
 import com.bna.gac.repositories.GarantieRepository;
@@ -23,6 +24,9 @@ public class GarantieServiceImpl implements GarantieService {
 
     @Override
     public GarantieDTO create(GarantieDTO dto) {
+        if (dto.getRisqueId() == null) {
+            throw new BadRequestException("Garantie must be linked to a Risque");
+        }
         Garantie garantie = mapper.toEntity(dto);
         garantie.setRisque(findRisque(dto.getRisqueId()));
         return mapper.toDTO(repository.save(garantie));
@@ -35,7 +39,9 @@ public class GarantieServiceImpl implements GarantieService {
         garantie.setDescription(dto.getDescription());
         garantie.setValeur(dto.getValeur());
         garantie.setStatut(dto.getStatut());
-        garantie.setRisque(findRisque(dto.getRisqueId()));
+        if (dto.getRisqueId() != null) {
+            garantie.setRisque(findRisque(dto.getRisqueId()));
+        }
         return mapper.toDTO(repository.save(garantie));
     }
 
@@ -60,9 +66,6 @@ public class GarantieServiceImpl implements GarantieService {
     }
 
     private Risque findRisque(Long id) {
-        if (id == null) {
-            return null;
-        }
         return risqueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Risque not found"));
     }

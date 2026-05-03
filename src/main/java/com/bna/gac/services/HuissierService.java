@@ -16,3 +16,4 @@ public interface HuissierService {
 
     void delete(Long id);
 }
+

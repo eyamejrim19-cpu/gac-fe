@@ -14,3 +14,4 @@ public class AvocatDTO {
     private String barreau;
     private String domaine;
 }
+

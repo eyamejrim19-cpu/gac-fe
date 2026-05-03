@@ -55,3 +55,4 @@ public class ChargeDossierServiceImpl implements ChargeDossierService {
                 .orElseThrow(() -> new ResourceNotFoundException("Charge dossier not found"));
     }
 }
+

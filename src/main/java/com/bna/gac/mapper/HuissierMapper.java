@@ -31,3 +31,4 @@ public interface HuissierMapper {
 
     List<HuissierDTO> toDtoList(List<Huissier> list);
 }
+

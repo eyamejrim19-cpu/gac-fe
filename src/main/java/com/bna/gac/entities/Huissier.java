@@ -10,3 +10,4 @@ public class Huissier extends Prestataire {
 
     private String zoneIntervention;
 }
+

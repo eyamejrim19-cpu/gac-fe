@@ -1,11 +1,13 @@
 package com.bna.gac.entities;
 
+import com.bna.gac.entities.enums.AffaireStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -21,8 +23,11 @@ public class Affaire {
     private Long idAffaire;
 
     private String numeroProcedure;
-    private LocalDateTime dateDebut;
-    private String statut;
+    private LocalDate dateDebut;
+
+    @Enumerated(EnumType.STRING)
+    private AffaireStatus statut;
+
     private String tribunal;
     private String jugement;
 
@@ -32,6 +37,23 @@ public class Affaire {
 
     @OneToMany(mappedBy = "affaire")
     private Set<Mission> missions;
+
     @OneToMany(mappedBy = "affaire")
     private Set<Audience> audiences;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

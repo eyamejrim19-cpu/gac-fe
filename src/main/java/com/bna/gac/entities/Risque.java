@@ -35,4 +35,20 @@ public class Risque {
 
     @OneToMany(mappedBy = "risque", cascade = CascadeType.ALL)
     private Set<Garantie> garanties;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
+

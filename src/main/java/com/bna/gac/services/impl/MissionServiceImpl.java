@@ -83,3 +83,4 @@ public class MissionServiceImpl implements MissionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }
 }
+

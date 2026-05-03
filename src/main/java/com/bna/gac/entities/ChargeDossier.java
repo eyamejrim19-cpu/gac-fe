@@ -17,3 +17,4 @@ public class ChargeDossier extends User {
     @OneToMany(mappedBy = "chargeDossier")
     private Set<DossierContentieux> dossiers;
 }
+

@@ -52,3 +52,4 @@ public class HuissierServiceImpl implements HuissierService {
                 .orElseThrow(() -> new ResourceNotFoundException("Huissier not found"));
     }
 }
+

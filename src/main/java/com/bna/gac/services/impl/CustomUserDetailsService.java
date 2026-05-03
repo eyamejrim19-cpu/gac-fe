@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -22,12 +25,24 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        user.getRoles().forEach(role -> {
+            // Add Role
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            // Add Permissions associated with the Role
+            if (role.getPermissions() != null) {
+                role.getPermissions().forEach(permission -> {
+                    authorities.add(new SimpleGrantedAuthority(permission.getCode()));
+                });
+            }
+        });
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .toList()
+                authorities.stream().distinct().toList()
         );
     }
 }
+

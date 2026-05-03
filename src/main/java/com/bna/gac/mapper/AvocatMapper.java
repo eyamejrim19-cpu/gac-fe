@@ -30,3 +30,4 @@ public interface AvocatMapper {
 
     List<AvocatDTO> toDtoList(List<Avocat> list);
 }
+

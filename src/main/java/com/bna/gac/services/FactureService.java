@@ -15,3 +15,4 @@ public interface FactureService {
 
     void delete(Long id);
 }
+

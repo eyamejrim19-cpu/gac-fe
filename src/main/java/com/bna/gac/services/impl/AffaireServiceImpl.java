@@ -3,6 +3,8 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.AffaireDTO;
 import com.bna.gac.entities.Affaire;
 import com.bna.gac.entities.DossierContentieux;
+import com.bna.gac.entities.enums.AffaireStatus;
+import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.AffaireMapper;
 import com.bna.gac.repositories.AffaireRepository;
@@ -27,20 +29,37 @@ public class AffaireServiceImpl implements AffaireService {
     public AffaireDTO create(AffaireDTO dto) {
         Affaire affaire = mapper.toEntity(dto);
         affaire.setDossier(findDossier(dto.getDossierId()));
+
+        if (affaire.getStatut() == null) {
+            affaire.setStatut(AffaireStatus.INITIEE);
+        }
+
         return mapper.toDto(affaireRepository.save(affaire));
     }
 
     @Override
     public AffaireDTO update(Long id, AffaireDTO dto) {
         Affaire affaire = findAffaire(id);
+
+        AffaireStatus newStatus = null;
+        if (dto.getStatut() != null) {
+            newStatus = AffaireStatus.valueOf(dto.getStatut().toUpperCase());
+        }
+
+        if (newStatus != null && !newStatus.equals(affaire.getStatut())) {
+            validateStatusTransition(affaire.getStatut(), newStatus);
+            affaire.setStatut(newStatus);
+        }
+
         affaire.setNumeroProcedure(dto.getNumeroProcedure());
-        affaire.setStatut(dto.getStatut());
         affaire.setTribunal(dto.getTribunal());
         affaire.setJugement(dto.getJugement());
-        affaire.setDateDebut(dto.getDateDebut() == null ? null : dto.getDateDebut().atStartOfDay());
+        affaire.setDateDebut(dto.getDateDebut());
+
         if (dto.getDossierId() != null) {
             affaire.setDossier(findDossier(dto.getDossierId()));
         }
+
         return mapper.toDto(affaireRepository.save(affaire));
     }
 
@@ -56,7 +75,19 @@ public class AffaireServiceImpl implements AffaireService {
 
     @Override
     public void delete(Long id) {
-        affaireRepository.delete(findAffaire(id));
+        Affaire affaire = findAffaire(id);
+
+        if (affaire.getStatut() == AffaireStatus.TERMINEE) {
+            throw new BadRequestException("Cannot delete a finished case (Affaire)");
+        }
+
+        affaireRepository.delete(affaire);
+    }
+
+    private void validateStatusTransition(AffaireStatus current, AffaireStatus next) {
+        if (current == AffaireStatus.TERMINEE) {
+            throw new BadRequestException("Cannot modify a finished case (Affaire)");
+        }
     }
 
     private Affaire findAffaire(Long id) {

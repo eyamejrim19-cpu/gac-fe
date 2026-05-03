@@ -1,11 +1,14 @@
 package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.RegisterRequestDTO;
+import com.bna.gac.dto.UserRequestDTO;
+import com.bna.gac.dto.UserResponseDTO;
 import com.bna.gac.entities.Role;
 import com.bna.gac.entities.User;
 import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceConflictException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
+import com.bna.gac.mapper.UserMapper;
 import com.bna.gac.repositories.RoleRepository;
 import com.bna.gac.repositories.UserRepository;
 import com.bna.gac.services.UserService;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +28,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
-    public String saveUser(RegisterRequestDTO request) {
+    public UserResponseDTO create(UserRequestDTO request) {
         if (request.getUsername() == null || request.getPassword() == null) {
             throw new BadRequestException("Username and password required");
         }
@@ -35,56 +40,94 @@ public class UserServiceImpl implements UserService {
             throw new ResourceConflictException("Username already exists");
         }
 
-        Role role = roleRepository.findByName("ROLE_USER")
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName("ROLE_USER");
-                    return roleRepository.save(newRole);
-                });
+        User user = userMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        Role defaultRole = roleRepository.findByName("RESPONSABLE")
+                .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+        Set<Role> roles = new HashSet<>();
+        roles.add(defaultRole);
+        user.setRoles(roles);
+
+        User saved = userRepository.save(user);
+        return userMapper.toResponseDto(saved);
+    }
+
+    @Override
+    public List<UserResponseDTO> getAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDTO getById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userMapper.toResponseDto(user);
+    }
+
+    @Override
+    public UserResponseDTO update(Long id, UserRequestDTO request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        User saved = userRepository.save(user);
+        return userMapper.toResponseDto(saved);
+    }
+
+    @Override
+    public void delete(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        userRepository.delete(user);
+    }
+
+    @Override
+    public UserResponseDTO assignRole(Long userId, Long roleId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
+        user.getRoles().add(role);
+        User saved = userRepository.save(user);
+        return userMapper.toResponseDto(saved);
+    }
+
+    @Override
+    public UserResponseDTO register(RegisterRequestDTO request) {
+        if (request.getUsername() == null || request.getPassword() == null) {
+            throw new BadRequestException("Username and password required");
+        }
+
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new ResourceConflictException("Username already exists");
+        }
 
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        Role defaultRole = roleRepository.findByName("RESPONSABLE")
+                .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
         Set<Role> roles = new HashSet<>();
-        roles.add(role);
+        roles.add(defaultRole);
         user.setRoles(roles);
 
-        userRepository.save(user);
-
-        return "User registered successfully";
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        userRepository.delete(getUserById(id));
-    }
-
-    @Override
-    public User assignRoleToUser(String username, String roleName) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-
-        user.getRoles().add(role);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User save(User user) {
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return userMapper.toResponseDto(saved);
     }
 }

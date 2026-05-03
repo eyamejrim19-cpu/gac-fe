@@ -68,3 +68,4 @@ public class PrestataireServiceImpl implements PrestataireService {
                 .orElseThrow(() -> new ResourceNotFoundException("Prestataire not found"));
     }
 }
+

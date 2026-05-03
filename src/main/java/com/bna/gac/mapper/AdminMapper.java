@@ -26,3 +26,4 @@ public interface AdminMapper {
 
     List<AdminDTO> toDtoList(List<Admin> list);
 }
+

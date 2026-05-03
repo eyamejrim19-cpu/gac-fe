@@ -15,7 +15,6 @@ public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPermission;
-
     private String code;
     private String description;
 

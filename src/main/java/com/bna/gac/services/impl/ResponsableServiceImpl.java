@@ -54,3 +54,4 @@ public class ResponsableServiceImpl implements ResponsableService {
                 .orElseThrow(() -> new ResourceNotFoundException("Responsable not found"));
     }
 }
+

@@ -20,3 +20,4 @@ public interface RoleService {
 
     RoleDTO removePermission(Long roleId, Long permissionId);
 }
+

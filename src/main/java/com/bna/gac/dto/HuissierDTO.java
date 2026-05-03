@@ -13,3 +13,4 @@ public class HuissierDTO {
     private Boolean enabled;
     private String cabinet;
 }
+

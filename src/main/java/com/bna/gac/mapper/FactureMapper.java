@@ -26,3 +26,4 @@ public interface FactureMapper {
         return value == null ? null : value.atStartOfDay();
     }
 }
+

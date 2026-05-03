@@ -54,3 +54,4 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found"));
     }
 }
+

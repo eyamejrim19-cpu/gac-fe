@@ -32,3 +32,4 @@ public interface MissionMapper {
         return value == null ? null : value.atStartOfDay();
     }
 }
+

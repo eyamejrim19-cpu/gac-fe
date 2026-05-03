@@ -30,13 +30,11 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
-    // ================= PASSWORD =================
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ================= AUTH PROVIDER =================
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
@@ -45,13 +43,11 @@ public class SecurityConfig {
         return auth;
     }
 
-    // ================= AUTH MANAGER =================
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // ================= CORS =================
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -68,7 +64,6 @@ public class SecurityConfig {
         return source;
     }
 
-    // ================= SECURITY FILTER =================
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -81,27 +76,22 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // AUTH
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // SWAGGER
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // IMPORTANT FIX: allow preflight
-                        .requestMatchers("/api/**").permitAll() // temporary safe fix
+                        .requestMatchers("/api/**").permitAll()
 
-                        // ROLE SECURITY (optional refinement later)
                         .requestMatchers("/api/dashboard/**")
                         .hasAnyRole("ADMIN", "RESPONSABLE")
 
                         .requestMatchers("/api/dossiers/**")
                         .hasAnyRole("ADMIN", "RESPONSABLE", "CHARGEDOSSIER")
 
-                        // fallback
                         .anyRequest().authenticated()
                 )
 

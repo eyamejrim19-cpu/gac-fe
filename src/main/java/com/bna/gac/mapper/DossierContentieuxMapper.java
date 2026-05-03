@@ -6,11 +6,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DossierContentieuxMapper {
 
     @Mapping(source = "client.id", target = "clientId")
@@ -24,12 +22,4 @@ public interface DossierContentieuxMapper {
     DossierContentieux toEntity(DossierContentieuxDTO dto);
 
     List<DossierContentieuxDTO> toDtoList(List<DossierContentieux> list);
-
-    default LocalDate map(LocalDateTime value) {
-        return value == null ? null : value.toLocalDate();
-    }
-
-    default LocalDateTime map(LocalDate value) {
-        return value == null ? null : value.atStartOfDay();
-    }
 }

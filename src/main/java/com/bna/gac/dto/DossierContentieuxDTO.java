@@ -21,3 +21,4 @@ public class DossierContentieuxDTO {
     private Long clientId;
     private Long chargeDossierId;
 }
+

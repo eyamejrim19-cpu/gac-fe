@@ -16,3 +16,4 @@ public interface AvocatService {
 
     void delete(Long id);
 }
+

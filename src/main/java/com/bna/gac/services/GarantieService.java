@@ -15,3 +15,4 @@ public interface GarantieService {
 
     void delete(Long id);
 }
+

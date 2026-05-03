@@ -16,3 +16,4 @@ public interface AffaireService {
 
     void delete(Long id);
 }
+

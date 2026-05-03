@@ -13,3 +13,4 @@ public class ChargeDossierDTO {
     private String telephone;
     private Boolean enabled;
 }
+

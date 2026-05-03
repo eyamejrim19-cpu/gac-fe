@@ -1,21 +1,23 @@
 package com.bna.gac.services;
 
 
-import com.bna.gac.dto.RegisterRequestDTO;
-import com.bna.gac.entities.User;
+import com.bna.gac.dto.UserRequestDTO;
+import com.bna.gac.dto.UserResponseDTO;
 import java.util.List;
 
 public interface UserService {
 
-    String saveUser(RegisterRequestDTO request);
+    UserResponseDTO create(UserRequestDTO request);
 
-    List<User> getAllUsers();
+    List<UserResponseDTO> getAll();
 
-    User getUserById(Long id);
+    UserResponseDTO getById(Long id);
 
-    void deleteUser(Long id);
+    UserResponseDTO update(Long id, UserRequestDTO request);
 
-    User assignRoleToUser(String username, String roleName);
+    void delete(Long id);
 
-    User save(User user);
+    UserResponseDTO assignRole(Long userId, Long roleId);
+
+    UserResponseDTO register(com.bna.gac.dto.RegisterRequestDTO request);
 }

@@ -25,3 +25,4 @@ public interface ResponsableMapper {
 
     List<ResponsableDTO> toDTOList(List<Responsable> list);
 }
+

@@ -15,3 +15,4 @@ public interface RisqueService {
 
     void delete(Long id);
 }
+

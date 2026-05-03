@@ -5,14 +5,15 @@ import com.bna.gac.dto.DossierContentieuxDTO;
 import com.bna.gac.entities.ChargeDossier;
 import com.bna.gac.entities.Client;
 import com.bna.gac.entities.DossierContentieux;
+import com.bna.gac.entities.enums.DossierStatus;
+import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.DossierContentieuxMapper;
-import com.bna.gac.repositories.ChargeDossierRepository;
-import com.bna.gac.repositories.ClientRepository;
-import com.bna.gac.repositories.DossierContentieuxRepository;
+import com.bna.gac.repositories.*;
 import com.bna.gac.services.DossierContentieuxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,31 +24,55 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
     private final DossierContentieuxRepository dossierRepository;
     private final ClientRepository clientRepository;
     private final ChargeDossierRepository chargeDossierRepository;
+    private final MissionRepository missionRepository;
+    private final FactureRepository factureRepository;
+    private final PrestataireRepository prestataireRepository;
     private final DossierContentieuxMapper mapper;
 
     @Override
+    @Transactional
     public DossierContentieuxDTO create(DossierContentieuxDTO dto) {
         DossierContentieux dossier = mapper.toEntity(dto);
         dossier.setClient(findClient(dto.getClientId()));
         dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
+        
+        if (dossier.getStatut() == null) {
+            dossier.setStatut(DossierStatus.OUVERT);
+        }
+        
         return mapper.toDto(dossierRepository.save(dossier));
     }
 
     @Override
+    @Transactional
     public DossierContentieuxDTO update(Long id, DossierContentieuxDTO dto) {
         DossierContentieux dossier = findDossier(id);
+        
+        DossierStatus newStatus = dto.getStatut() != null ? DossierStatus.valueOf(dto.getStatut()) : null;
+        if (newStatus != null && !newStatus.equals(dossier.getStatut())) {
+            validateStatusTransition(dossier.getStatut(), newStatus);
+            dossier.setStatut(newStatus);
+        }
+
         dossier.setReference(dto.getReference());
         dossier.setDateOuverture(dto.getDateOuverture() == null ? null : dto.getDateOuverture().atStartOfDay());
-        dossier.setStatut(dto.getStatut());
         dossier.setNiveauRisque(dto.getNiveauRisque());
         dossier.setDateCloture(dto.getDateCloture() == null ? null : dto.getDateCloture().atStartOfDay());
         dossier.setMontantInitial(dto.getMontantInitial());
         dossier.setMontantRecupere(dto.getMontantRecupere());
+        
         if (dto.getClientId() != null) {
             dossier.setClient(findClient(dto.getClientId()));
         }
         dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
+        
         return mapper.toDto(dossierRepository.save(dossier));
+    }
+
+    private void validateStatusTransition(DossierStatus current, DossierStatus next) {
+        if (current == DossierStatus.CLOTURE) {
+            throw new BadRequestException("Cannot modify a closed dossier");
+        }
     }
 
     @Override
@@ -67,20 +92,43 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
 
     @Override
     public void delete(Long id) {
-        dossierRepository.delete(findDossier(id));
+        DossierContentieux dossier = findDossier(id);
+        if (dossier.getStatut() == DossierStatus.CLOTURE) {
+            throw new BadRequestException("Cannot delete a closed dossier");
+        }
+        dossierRepository.delete(dossier);
     }
 
     @Override
     public DashboardStatsDTO getStats() {
         DashboardStatsDTO dto = new DashboardStatsDTO();
+        
         long total = dossierRepository.count();
-        long actifs = dossierRepository.countByStatut("EN_COURS");
-        long clotures = dossierRepository.countByStatut("CLOTURE");
+        long actifs = dossierRepository.countByStatut(DossierStatus.EN_COURS);
+        long clotures = dossierRepository.countByStatut(DossierStatus.CLOTURE);
 
         dto.setTotalDossiers(total);
         dto.setDossiersActifs(actifs);
         dto.setDossiersClotures(clotures);
-        dto.setTauxRecouvrement(total == 0 ? 0 : (clotures * 100.0 / total));
+
+        Double recupere = dossierRepository.sumMontantRecupere();
+        Double impaye = dossierRepository.sumMontantImpaye();
+        Double totalInitial = dossierRepository.sumMontantInitial();
+        
+        dto.setMontantTotalRecupere(recupere != null ? recupere : 0.0);
+        dto.setMontantTotalImpaye(impaye != null ? impaye : 0.0);
+        
+        // Correct Financial Recovery Rate calculation
+        dto.setTauxRecouvrement((totalInitial == null || totalInitial == 0) ? 0 : (dto.getMontantTotalRecupere() * 100.0 / totalInitial));
+
+        dto.setMissionsEnCours(missionRepository.countByStatut("EN_COURS"));
+        dto.setMissionsTerminees(missionRepository.countByStatut("TERMINEE"));
+        
+        dto.setFacturesEnAttente(factureRepository.countByStatut("EN_ATTENTE"));
+        dto.setFacturesPayees(factureRepository.countByStatut("PAYEE"));
+
+        dto.setPrestatairesActifs(prestataireRepository.countByActif(true));
+        dto.setClientsActifs(clientRepository.count());
 
         return dto;
     }

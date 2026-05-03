@@ -16,3 +16,4 @@ public interface MissionService {
 
     void delete(Long id);
 }
+

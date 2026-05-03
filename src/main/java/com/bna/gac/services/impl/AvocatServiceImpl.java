@@ -53,3 +53,4 @@ public class AvocatServiceImpl implements AvocatService {
                 .orElseThrow(() -> new ResourceNotFoundException("Avocat not found"));
     }
 }
+

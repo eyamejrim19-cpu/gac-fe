@@ -5,6 +5,7 @@ import com.bna.gac.entities.Permission;
 import com.bna.gac.entities.Role;
 import com.bna.gac.exceptions.ResourceConflictException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
+import com.bna.gac.mapper.RoleMapper;
 import com.bna.gac.repositories.PermissionRepository;
 import com.bna.gac.repositories.RoleRepository;
 import com.bna.gac.services.RoleService;
@@ -13,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +22,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final RoleMapper roleMapper;
 
     @Override
     public RoleDTO create(RoleDTO dto) {
@@ -30,10 +30,9 @@ public class RoleServiceImpl implements RoleService {
             throw new ResourceConflictException("Role already exists");
         }
 
-        Role role = new Role();
-        role.setName(dto.getName());
-        role.setDescription(dto.getDescription());
-        return mapToDTO(roleRepository.save(role));
+        Role role = roleMapper.toEntity(dto);
+        Role saved = roleRepository.save(role);
+        return roleMapper.toDto(saved);
     }
 
     @Override
@@ -41,7 +40,8 @@ public class RoleServiceImpl implements RoleService {
         Role role = findRole(id);
         role.setName(dto.getName());
         role.setDescription(dto.getDescription());
-        return mapToDTO(roleRepository.save(role));
+        Role saved = roleRepository.save(role);
+        return roleMapper.toDto(saved);
     }
 
     @Override
@@ -51,14 +51,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO getById(Long id) {
-        return mapToDTO(findRole(id));
+        return roleMapper.toDto(findRole(id));
     }
 
     @Override
     public List<RoleDTO> getAll() {
         return roleRepository.findAll()
                 .stream()
-                .map(this::mapToDTO)
+                .map(roleMapper::toDto)
                 .toList();
     }
 
@@ -67,7 +67,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = findRole(roleId);
         Permission permission = findPermission(permissionId);
         role.getPermissions().add(permission);
-        return mapToDTO(roleRepository.save(role));
+        return roleMapper.toDto(roleRepository.save(role));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = findRole(roleId);
         Permission permission = findPermission(permissionId);
         role.getPermissions().remove(permission);
-        return mapToDTO(roleRepository.save(role));
+        return roleMapper.toDto(roleRepository.save(role));
     }
 
     private Role findRole(Long id) {
@@ -86,20 +86,5 @@ public class RoleServiceImpl implements RoleService {
     private Permission findPermission(Long id) {
         return permissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
-    }
-
-    private RoleDTO mapToDTO(Role role) {
-        RoleDTO dto = new RoleDTO();
-        dto.setIdRole(role.getIdRole());
-        dto.setName(role.getName());
-        dto.setDescription(role.getDescription());
-
-        Set<Long> permissionIds = role.getPermissions()
-                .stream()
-                .map(Permission::getIdPermission)
-                .collect(Collectors.toSet());
-
-        dto.setPermissionIds(permissionIds);
-        return dto;
     }
 }

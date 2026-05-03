@@ -1,5 +1,6 @@
 package com.bna.gac.entities;
 
+import com.bna.gac.entities.enums.DossierStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,10 @@ public class DossierContentieux {
 
     private String reference;
     private LocalDateTime dateOuverture;
-    private String statut;
+
+    @Enumerated(EnumType.STRING)
+    private DossierStatus statut;
+
     private String niveauRisque;
     private LocalDateTime dateCloture;
     private Double montantInitial;
@@ -38,4 +42,20 @@ public class DossierContentieux {
 
     @OneToMany(mappedBy = "dossier", cascade = CascadeType.ALL)
     private Set<Risque> risques;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
+
