@@ -16,4 +16,15 @@ public class ClientDTO {
     private String adresse;
     private Boolean active;
     private LocalDateTime dateCreation;
+
+    public String getTypeClient() {
+        return "";
+    }
+
+    public void setTypeClient(String type) {
+    }
+
+    public String getRne() {
+        return "";
+    }
 }

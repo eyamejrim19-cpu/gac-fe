@@ -15,6 +15,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -162,8 +163,8 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Dedicated status-only update. Touches ONLY the active field.
      */
-    @Override
     @Transactional
+    @Override
     public ClientDTO updateStatus(Long id, StatusUpdateDTO dto) {
         if (dto.getActive() == null) {
             throw new BadRequestException("Le champ 'active' est obligatoire");
@@ -190,7 +191,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public List<ClientDTO> getAll() {
+        return List.of();
+    }
+
     @Transactional
+    @Override
     public ClientDTO deactivate(Long id) {
         log.info("deactivate client id={}", id);
         Client c = repo.findById(id)
@@ -199,8 +205,8 @@ public class ClientServiceImpl implements ClientService {
         return mapper.toDto(repo.save(c));
     }
 
-    @Override
     @Transactional
+    @Override
     public ClientDTO reactivate(Long id) {
         log.info("reactivate client id={}", id);
         Client c = repo.findById(id)
@@ -307,26 +313,26 @@ public class ClientServiceImpl implements ClientService {
 
     /** Duplicate check on UPDATE — excludes the record being updated. */
     private void checkDuplicatesForUpdate(Long currentId, ClientDTO dto) {
-        List<String> errors = new java.util.ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
         if (dto.getTel() != null)
             repo.findByTel(dto.getTel())
-                .filter(c -> !c.getId().equals(currentId))
+                .filter(c -> !c.getClass().equals(currentId))
                 .ifPresent(c -> errors.add("Ce numéro de téléphone est déjà utilisé."));
 
         if (dto.getEmail() != null && !dto.getEmail().isBlank())
             repo.findByEmail(dto.getEmail())
-                .filter(c -> !c.getId().equals(currentId))
+                .filter(c -> !c.getClass().equals(currentId))
                 .ifPresent(c -> errors.add("Cette adresse email est déjà utilisée."));
 
         if (dto.getCin() != null && !dto.getCin().isBlank())
             repo.findByCin(dto.getCin())
-                .filter(c -> !c.getId().equals(currentId))
+                .filter(c -> !c.getClass().equals(currentId))
                 .ifPresent(c -> errors.add("Cette CIN est déjà utilisée."));
 
         if (dto.getRne() != null && !dto.getRne().isBlank())
             repo.findByRne(dto.getRne())
-                .filter(c -> !c.getId().equals(currentId))
+                .filter(c -> !c.getClass().equals(currentId))
                 .ifPresent(c -> errors.add("Ce RNE est déjà utilisé."));
 
         if (!errors.isEmpty()) {

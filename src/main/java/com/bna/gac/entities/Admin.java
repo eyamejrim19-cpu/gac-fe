@@ -12,4 +12,3 @@ public class Admin extends User {
     private boolean gererUtilisateur;
     private boolean gererProfil;
 }
-
