@@ -13,6 +13,8 @@ public interface RisqueService {
 
     List<RisqueDTO> getAll();
 
+    List<RisqueDTO> getByDossierId(Long dossierId);
+
     void delete(Long id);
 }
 

@@ -33,6 +33,12 @@ public class RisqueController {
         return service.getAll();
     }
 
+    @GetMapping("/dossier/{dossierId}")
+    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    public List<RisqueDTO> getByDossier(@PathVariable Long dossierId) {
+        return service.getByDossierId(dossierId);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
     public RisqueDTO getById(@PathVariable Long id) {

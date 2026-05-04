@@ -12,6 +12,8 @@ public interface AffaireService {
 
     List<AffaireDTO> getAll();
 
+    List<AffaireDTO> getByDossierId(Long dossierId);
+
     AffaireDTO getById(Long id);
 
     void delete(Long id);

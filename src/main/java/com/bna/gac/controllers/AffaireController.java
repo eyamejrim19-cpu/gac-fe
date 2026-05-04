@@ -33,6 +33,12 @@ public class AffaireController {
         return service.getAll();
     }
 
+    @GetMapping("/dossier/{dossierId}")
+    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    public List<AffaireDTO> getByDossier(@PathVariable Long dossierId) {
+        return service.getByDossierId(dossierId);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
     public AffaireDTO getById(@PathVariable Long id) {

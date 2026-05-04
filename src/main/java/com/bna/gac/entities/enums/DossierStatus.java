@@ -4,6 +4,9 @@ public enum DossierStatus {
     OUVERT,
     EN_COURS,
     VALIDE,
-    CLOTURE
+    CLOTURE,
+    SUSPENDU,
+    TRANSFERE,
+    EN_ATTENTE
 }
 

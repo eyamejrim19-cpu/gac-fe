@@ -43,11 +43,19 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Role defaultRole = roleRepository.findByName("RESPONSABLE")
-                .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
-        Set<Role> roles = new HashSet<>();
-        roles.add(defaultRole);
-        user.setRoles(roles);
+        if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
+            Set<Role> roles = new HashSet<>(roleRepository.findAllById(request.getRoleIds()));
+            if (roles.isEmpty()) {
+                throw new ResourceNotFoundException("No valid roles found for provided roleIds");
+            }
+            user.setRoles(roles);
+        } else {
+            Role defaultRole = roleRepository.findByName("RESPONSABLE")
+                    .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+            Set<Role> roles = new HashSet<>();
+            roles.add(defaultRole);
+            user.setRoles(roles);
+        }
 
         User saved = userRepository.save(user);
         return userMapper.toResponseDto(saved);
@@ -81,6 +89,12 @@ public class UserServiceImpl implements UserService {
         }
         if (request.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getNom() != null) {
+            user.setNom(request.getNom());
+        }
+        if (request.getPrenom() != null) {
+            user.setPrenom(request.getPrenom());
         }
 
         User saved = userRepository.save(user);

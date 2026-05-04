@@ -69,6 +69,11 @@ public class AffaireServiceImpl implements AffaireService {
     }
 
     @Override
+    public List<AffaireDTO> getByDossierId(Long dossierId) {
+        return mapper.toDtoList(affaireRepository.findByDossier_IdDossier(dossierId));
+    }
+
+    @Override
     public AffaireDTO getById(Long id) {
         return mapper.toDto(findAffaire(id));
     }

@@ -66,6 +66,11 @@ public class RisqueServiceImpl implements RisqueService {
     }
 
     @Override
+    public List<RisqueDTO> getByDossierId(Long dossierId) {
+        return mapper.toDtoList(repository.findByDossier_IdDossier(dossierId));
+    }
+
+    @Override
     public void delete(Long id) {
         repository.delete(findRisque(id));
     }
