@@ -112,13 +112,19 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO assignRole(Long userId, Long roleId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-
         user.getRoles().add(role);
         User saved = userRepository.save(user);
         return userMapper.toResponseDto(saved);
+    }
+
+    @Override
+    public UserResponseDTO toggleStatus(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setEnabled(!user.isEnabled());
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 
     @Override

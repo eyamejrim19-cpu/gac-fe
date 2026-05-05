@@ -3,12 +3,14 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.AffaireDTO;
 import com.bna.gac.entities.Affaire;
 import com.bna.gac.entities.DossierContentieux;
+import com.bna.gac.entities.Prestataire;
 import com.bna.gac.entities.enums.AffaireStatus;
 import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.AffaireMapper;
 import com.bna.gac.repositories.AffaireRepository;
 import com.bna.gac.repositories.DossierContentieuxRepository;
+import com.bna.gac.repositories.PrestataireRepository;
 import com.bna.gac.services.AffaireService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +25,19 @@ public class AffaireServiceImpl implements AffaireService {
 
     private final AffaireRepository affaireRepository;
     private final DossierContentieuxRepository dossierRepository;
+    private final PrestataireRepository prestataireRepository;
     private final AffaireMapper mapper;
 
     @Override
     public AffaireDTO create(AffaireDTO dto) {
         Affaire affaire = mapper.toEntity(dto);
         affaire.setDossier(findDossier(dto.getDossierId()));
-
+        if (dto.getPrestataireId() != null) {
+            affaire.setPrestataire(findPrestataire(dto.getPrestataireId()));
+        }
         if (affaire.getStatut() == null) {
             affaire.setStatut(AffaireStatus.INITIEE);
         }
-
         return mapper.toDto(affaireRepository.save(affaire));
     }
 
@@ -45,7 +49,6 @@ public class AffaireServiceImpl implements AffaireService {
         if (dto.getStatut() != null) {
             newStatus = AffaireStatus.valueOf(dto.getStatut().toUpperCase());
         }
-
         if (newStatus != null && !newStatus.equals(affaire.getStatut())) {
             validateStatusTransition(affaire.getStatut(), newStatus);
             affaire.setStatut(newStatus);
@@ -58,6 +61,9 @@ public class AffaireServiceImpl implements AffaireService {
 
         if (dto.getDossierId() != null) {
             affaire.setDossier(findDossier(dto.getDossierId()));
+        }
+        if (dto.getPrestataireId() != null) {
+            affaire.setPrestataire(findPrestataire(dto.getPrestataireId()));
         }
 
         return mapper.toDto(affaireRepository.save(affaire));
@@ -103,5 +109,10 @@ public class AffaireServiceImpl implements AffaireService {
     private DossierContentieux findDossier(Long id) {
         return dossierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Dossier not found"));
+    }
+
+    private Prestataire findPrestataire(Long id) {
+        return prestataireRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Prestataire not found"));
     }
 }

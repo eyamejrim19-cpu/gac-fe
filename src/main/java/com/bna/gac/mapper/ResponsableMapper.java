@@ -8,7 +8,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE, unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ResponsableMapper {
 
     ResponsableDTO toDTO(Responsable responsable);
@@ -16,6 +16,7 @@ public interface ResponsableMapper {
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "validerDossier", ignore = true)
     @Mapping(target = "validerFacture", ignore = true)
     @Mapping(target = "validerMission", ignore = true)

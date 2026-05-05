@@ -46,7 +46,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO request) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserRequestDTO request) {
         UserResponseDTO user = userService.update(id, request);
         return ResponseEntity.ok(user);
     }
@@ -64,6 +64,13 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
         UserResponseDTO user = userService.assignRole(userId, roleId);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}/toggle-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDTO> toggleStatus(@PathVariable Long id) {
+        UserResponseDTO user = userService.toggleStatus(id);
         return ResponseEntity.ok(user);
     }
 }

@@ -13,4 +13,5 @@ public class UserResponseDTO {
     private String nom;
     private String prenom;
     private List<String> roles;
+    private boolean enabled;
 }

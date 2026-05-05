@@ -11,7 +11,6 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AdminMapper {
 
-    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "niveauAcces", ignore = true)
     AdminDTO toDto(Admin entity);
 
@@ -20,6 +19,7 @@ public interface AdminMapper {
     @Mapping(target = "telephone", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "gererUtilisateur", ignore = true)
     @Mapping(target = "gererProfil", ignore = true)
     Admin toEntity(AdminDTO dto);

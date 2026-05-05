@@ -16,4 +16,5 @@ public class AffaireDTO {
     private String jugement;
     private LocalDate dateDebut;
     private Long dossierId;
+    private Long prestataireId;
 }

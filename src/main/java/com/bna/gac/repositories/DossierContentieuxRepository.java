@@ -2,6 +2,7 @@ package com.bna.gac.repositories;
 
 import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.entities.enums.DossierStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,6 +14,8 @@ public interface DossierContentieuxRepository extends JpaRepository<DossierConte
 
     List<DossierContentieux> findTop5ByOrderByIdDossierDesc();
 
+    List<DossierContentieux> findByOrderByIdDossierDesc(Pageable pageable);
+
     @Query("SELECT SUM(d.montantRecupere) FROM DossierContentieux d")
     Double sumMontantRecupere();
 
@@ -22,4 +25,3 @@ public interface DossierContentieuxRepository extends JpaRepository<DossierConte
     @Query("SELECT SUM(d.montantInitial) FROM DossierContentieux d")
     Double sumMontantInitial();
 }
-

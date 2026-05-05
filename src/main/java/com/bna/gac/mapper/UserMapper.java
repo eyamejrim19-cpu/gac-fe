@@ -20,6 +20,7 @@ public interface UserMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "nom", source = "nom")
     @Mapping(target = "prenom", source = "prenom")
+    @Mapping(target = "enabled", source = "enabled")
     @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToNames")
     UserResponseDTO toResponseDto(User user);
 
@@ -27,6 +28,7 @@ public interface UserMapper {
     @Mapping(target = "nom", source = "nom")
     @Mapping(target = "prenom", source = "prenom")
     @Mapping(target = "telephone", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "username", source = "username")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "password", source = "password")

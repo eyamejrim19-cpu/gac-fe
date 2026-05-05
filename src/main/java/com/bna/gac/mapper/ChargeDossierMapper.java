@@ -11,13 +11,13 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ChargeDossierMapper {
 
-    @Mapping(target = "enabled", ignore = true)
     ChargeDossierDTO toDto(ChargeDossier entity);
 
     @Mapping(target = "nom", ignore = true)
     @Mapping(target = "prenom", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "dossiers", ignore = true)
     ChargeDossier toEntity(ChargeDossierDTO dto);
 

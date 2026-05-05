@@ -52,4 +52,16 @@ public class RoleController {
         roleService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{roleId}/permissions/{permissionId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RoleDTO> assignPermission(@PathVariable Long roleId, @PathVariable Long permissionId) {
+        return ResponseEntity.ok(roleService.assignPermission(roleId, permissionId));
+    }
+
+    @DeleteMapping("/{roleId}/permissions/{permissionId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RoleDTO> removePermission(@PathVariable Long roleId, @PathVariable Long permissionId) {
+        return ResponseEntity.ok(roleService.removePermission(roleId, permissionId));
+    }
 }

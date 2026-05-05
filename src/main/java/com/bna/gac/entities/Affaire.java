@@ -35,6 +35,10 @@ public class Affaire {
     @JoinColumn(name = "dossier_id")
     private DossierContentieux dossier;
 
+    @ManyToOne
+    @JoinColumn(name = "prestataire_id")
+    private Prestataire prestataire;
+
     @OneToMany(mappedBy = "affaire")
     private Set<Mission> missions;
 

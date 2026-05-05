@@ -19,5 +19,7 @@ public interface UserService {
 
     UserResponseDTO assignRole(Long userId, Long roleId);
 
+    UserResponseDTO toggleStatus(Long id);
+
     UserResponseDTO register(com.bna.gac.dto.RegisterRequestDTO request);
 }

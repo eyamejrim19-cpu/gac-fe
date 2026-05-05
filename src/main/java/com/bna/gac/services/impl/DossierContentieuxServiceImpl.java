@@ -12,6 +12,7 @@ import com.bna.gac.mapper.DossierContentieuxMapper;
 import com.bna.gac.repositories.*;
 import com.bna.gac.services.DossierContentieuxService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +83,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
 
     @Override
     public List<DossierContentieuxDTO> findRecent(int limit) {
-        return mapper.toDtoList(dossierRepository.findTop5ByOrderByIdDossierDesc());
+        return mapper.toDtoList(dossierRepository.findByOrderByIdDossierDesc(PageRequest.of(0, limit)));
     }
 
     @Override

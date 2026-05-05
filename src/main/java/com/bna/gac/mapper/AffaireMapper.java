@@ -12,10 +12,12 @@ import java.util.List;
 public interface AffaireMapper {
 
     @Mapping(source = "dossier.idDossier", target = "dossierId")
+    @Mapping(source = "prestataire.idPrestataire", target = "prestataireId")
     @Mapping(source = "statut", target = "statut")
     AffaireDTO toDto(Affaire entity);
 
     @Mapping(source = "dossierId", target = "dossier.idDossier")
+    @Mapping(target = "prestataire", ignore = true)
     @Mapping(target = "missions", ignore = true)
     @Mapping(target = "audiences", ignore = true)
     @Mapping(target = "statut", ignore = true)

@@ -9,11 +9,9 @@ import java.util.List;
 
 public class UserRequestDTO {
 
-    @NotBlank
     private String username;
     @NotBlank
     private String email;
-    @NotBlank
     private String password;
 
     private String nom;
