@@ -192,7 +192,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<ClientDTO> getAll() {
-        return List.of();
+        return repo.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Transactional
@@ -317,22 +317,22 @@ public class ClientServiceImpl implements ClientService {
 
         if (dto.getTel() != null)
             repo.findByTel(dto.getTel())
-                .filter(c -> !c.getClass().equals(currentId))
+                .filter(c -> !c.getId().equals(currentId))
                 .ifPresent(c -> errors.add("Ce numéro de téléphone est déjà utilisé."));
 
         if (dto.getEmail() != null && !dto.getEmail().isBlank())
             repo.findByEmail(dto.getEmail())
-                .filter(c -> !c.getClass().equals(currentId))
+                .filter(c -> !c.getId().equals(currentId))
                 .ifPresent(c -> errors.add("Cette adresse email est déjà utilisée."));
 
         if (dto.getCin() != null && !dto.getCin().isBlank())
             repo.findByCin(dto.getCin())
-                .filter(c -> !c.getClass().equals(currentId))
+                .filter(c -> !c.getId().equals(currentId))
                 .ifPresent(c -> errors.add("Cette CIN est déjà utilisée."));
 
         if (dto.getRne() != null && !dto.getRne().isBlank())
             repo.findByRne(dto.getRne())
-                .filter(c -> !c.getClass().equals(currentId))
+                .filter(c -> !c.getId().equals(currentId))
                 .ifPresent(c -> errors.add("Ce RNE est déjà utilisé."));
 
         if (!errors.isEmpty()) {
@@ -340,4 +340,6 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 }
+
+
 

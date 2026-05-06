@@ -17,9 +17,11 @@ public class ClientMapper {
         dto.setNom(c.getNom());
         dto.setPrenom(c.getPrenom());
         dto.setCin(c.getCin());
+        dto.setRne(c.getRne());
         dto.setTel(c.getTel());
         dto.setEmail(c.getEmail());
         dto.setAdresse(c.getAdresse());
+        dto.setTypeClient(c.getTypeClient());
         dto.setActive(c.getActive());
         dto.setDateCreation(c.getDateCreation());
 
@@ -35,11 +37,18 @@ public class ClientMapper {
         c.setId(dto.getId());
         c.setNom(dto.getNom());
         c.setPrenom(dto.getPrenom());
-        c.setCin(dto.getCin());
         c.setTel(dto.getTel());
         c.setEmail(dto.getEmail());
         c.setAdresse(dto.getAdresse());
+        c.setTypeClient(dto.getTypeClient());
         c.setActive(dto.getActive());
+
+        // Only set the identifier that matches the type
+        if ("MORALE".equalsIgnoreCase(dto.getTypeClient())) {
+            c.setRne(dto.getRne());
+        } else {
+            c.setCin(dto.getCin());
+        }
 
         return c;
     }

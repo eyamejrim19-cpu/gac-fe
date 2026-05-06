@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 
@@ -12,26 +13,54 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleNotFound(
+            ResourceNotFoundException ex, HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(ResourceConflictException.class)
-    public ResponseEntity<ApiError> handleConflict(ResourceConflictException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleConflict(
+            ResourceConflictException ex, HttpServletRequest request) {
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleBadRequest(
+            BadRequestException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    /**
+     * Handles invalid enum values passed as @RequestParam or @PathVariable.
+     * e.g. /api/prestataires/paginated?type=INVALID  →  400 instead of 500
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String msg = String.format(
+                "Valeur invalide '%s' pour le paramètre '%s'",
+                ex.getValue(), ex.getName());
+        return buildError(HttpStatus.BAD_REQUEST, msg, request.getRequestURI());
+    }
+
+    /**
+     * Handles TypePrestataire.valueOf() failures and other illegal argument errors.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(
+            IllegalArgumentException ex, HttpServletRequest request) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest request) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getRequestURI());
+    public ResponseEntity<ApiError> handleGeneric(
+            Exception ex, HttpServletRequest request) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR,
+                ex.getMessage(), request.getRequestURI());
     }
 
-    private ResponseEntity<ApiError> buildError(HttpStatus status, String message, String path) {
+    private ResponseEntity<ApiError> buildError(
+            HttpStatus status, String message, String path) {
         ApiError error = ApiError.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
@@ -39,8 +68,6 @@ public class GlobalExceptionHandler {
                 .message(message)
                 .path(path)
                 .build();
-
         return ResponseEntity.status(status).body(error);
     }
 }
-

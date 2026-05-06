@@ -1,0 +1,19 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" routerLink="/clients">GAC</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/clients" routerLinkActive="active">Clients</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/prestataires" routerLinkActive="active">Prestataires</a></li>
+      </ul>
+      <ul class="navbar-nav" *ngIf="auth.isLoggedIn()">
+        <li class="nav-item d-flex align-items-center me-3">
+          <span class="text-white-50 small">{{ auth.getUser()?.username }}</span>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-light btn-sm" (click)="logout()">Deconnexion</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

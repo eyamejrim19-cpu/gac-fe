@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Clients</h2>
+    <button class="btn btn-primary" (click)="onCreate()">+ Nouveau client</button>
+  </div>
+  <div class="row g-2 mb-3">
+    <div class="col-md-4"><input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"/></div>
+    <div class="col-md-3"><select class="form-select" [(ngModel)]="filterType" (change)="onSearch()"><option value="">Tous types</option><option value="PHYSIQUE">Physique</option><option value="MORALE">Morale</option></select></div>
+    <div class="col-md-3"><select class="form-select" [(ngModel)]="filterActive" (change)="onSearch()"><option [ngValue]="undefined">Tous statuts</option><option [ngValue]="true">Actif</option><option [ngValue]="false">Inactif</option></select></div>
+    <div class="col-md-2"><button class="btn btn-outline-secondary w-100" (click)="onSearch()">Filtrer</button></div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+  <div *ngIf="!loading" class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light"><tr><th>Nom</th><th>Type</th><th>CIN/RNE</th><th>Email</th><th>Tel</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let c of clients">
+          <td>{{ c.nom }}</td>
+          <td><span class="badge" [class.bg-info]="c.typeClient==='PHYSIQUE'" [class.bg-warning]="c.typeClient==='MORALE'">{{ c.typeClient }}</span></td>
+          <td><span *ngIf="c.typeClient==='PHYSIQUE'">{{ c.cin||"--" }}</span><span *ngIf="c.typeClient==='MORALE'">{{ c.rne||"--" }}</span></td>
+          <td>{{ c.email }}</td><td>{{ c.tel }}</td>
+          <td><span class="badge" [class.bg-success]="c.active" [class.bg-secondary]="!c.active">{{ c.active ? "Actif" : "Inactif" }}</span></td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-outline-primary" (click)="onEdit(c.id!)">Modifier</button>
+              <button class="btn btn-sm" [class.btn-outline-warning]="c.active" [class.btn-outline-success]="!c.active" (click)="onToggleActive(c)">{{ c.active ? "Desactiver" : "Activer" }}</button>
+              <button class="btn btn-sm btn-outline-danger" (click)="onDelete(c.id!)">Supprimer</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="clients.length===0"><td colspan="7" class="text-center text-muted py-4">Aucun client.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <nav *ngIf="totalPages>1"><ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="currentPage===0"><button class="page-link" (click)="onPageChange(currentPage-1)">Precedent</button></li>
+    <li *ngFor="let p of [].constructor(totalPages); let i=index" class="page-item" [class.active]="i===currentPage"><button class="page-link" (click)="onPageChange(i)">{{ i+1 }}</button></li>
+    <li class="page-item" [class.disabled]="currentPage===totalPages-1"><button class="page-link" (click)="onPageChange(currentPage+1)">Suivant</button></li>
+  </ul></nav>
+  <p class="text-muted small">Total: {{ totalElements }}</p>
+</div>

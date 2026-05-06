@@ -11,20 +11,11 @@ public class ClientDTO {
     private String nom;
     private String prenom;
     private String cin;
+    private String rne;
     private String tel;
     private String email;
     private String adresse;
+    private String typeClient;
     private Boolean active;
     private LocalDateTime dateCreation;
-
-    public String getTypeClient() {
-        return "";
-    }
-
-    public void setTypeClient(String type) {
-    }
-
-    public String getRne() {
-        return "";
-    }
 }
