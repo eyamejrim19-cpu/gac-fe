@@ -27,6 +27,34 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponseDTO> getMe(
+            org.springframework.security.core.Authentication authentication) {
+        UserResponseDTO user = userService.getByUsername(authentication.getName());
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponseDTO> updateMe(
+            org.springframework.security.core.Authentication authentication,
+            @RequestBody UserRequestDTO request) {
+        UserResponseDTO user = userService.getByUsername(authentication.getName());
+        UserResponseDTO updated = userService.update(user.getId(), request);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/me/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> changeMyPassword(
+            org.springframework.security.core.Authentication authentication,
+            @RequestBody java.util.Map<String, String> body) {
+        UserResponseDTO user = userService.getByUsername(authentication.getName());
+        userService.changePassword(user.getId(), body.get("currentPassword"), body.get("newPassword"));
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -72,5 +100,14 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> toggleStatus(@PathVariable Long id) {
         UserResponseDTO user = userService.toggleStatus(id);
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/{id}/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body) {
+        userService.changePassword(id, body.get("currentPassword"), body.get("newPassword"));
+        return ResponseEntity.ok().build();
     }
 }

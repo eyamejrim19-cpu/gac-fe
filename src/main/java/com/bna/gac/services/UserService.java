@@ -13,6 +13,8 @@ public interface UserService {
 
     UserResponseDTO getById(Long id);
 
+    UserResponseDTO getByUsername(String username);
+
     UserResponseDTO update(Long id, UserRequestDTO request);
 
     void delete(Long id);
@@ -20,6 +22,8 @@ public interface UserService {
     UserResponseDTO assignRole(Long userId, Long roleId);
 
     UserResponseDTO toggleStatus(Long id);
+
+    void changePassword(Long id, String currentPassword, String newPassword);
 
     UserResponseDTO register(com.bna.gac.dto.RegisterRequestDTO request);
 }

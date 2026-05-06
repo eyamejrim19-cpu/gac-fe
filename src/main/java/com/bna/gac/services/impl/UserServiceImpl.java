@@ -77,6 +77,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO getByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userMapper.toResponseDto(user);
+    }
+
+    @Override
     public UserResponseDTO update(Long id, UserRequestDTO request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -125,6 +132,17 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setEnabled(!user.isEnabled());
         return userMapper.toResponseDto(userRepository.save(user));
+    }
+
+    @Override
+    public void changePassword(Long id, String currentPassword, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BadRequestException("Mot de passe actuel incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     @Override

@@ -16,31 +16,31 @@ public class DossierController {
     private final DossierContentieuxService service;
 
     @GetMapping("/recent")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<DossierContentieuxDTO> getRecent(@RequestParam int limit) {
         return service.findRecent(limit);
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public DossierContentieuxDTO create(@RequestBody DossierContentieuxDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public DossierContentieuxDTO update(@PathVariable Long id, @RequestBody DossierContentieuxDTO dto) {
         return service.update(id, dto);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<DossierContentieuxDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public DossierContentieuxDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }
