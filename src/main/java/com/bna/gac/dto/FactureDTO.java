@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class FactureDTO {
 
     private Long idFacture;
+    private Long id;
     private String numero;
     private LocalDate dateEmission;
     private Double montant;

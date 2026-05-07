@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public interface FactureMapper {
 
     @Mapping(source = "mission.idMission", target = "missionId")
+    @Mapping(source = "idFacture", target = "id")
     FactureDTO toDto(Facture entity);
 
     @Mapping(target = "mission", ignore = true)

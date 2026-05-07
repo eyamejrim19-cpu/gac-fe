@@ -9,7 +9,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PrestataireMapper {
 
     @Mapping(source = "idPrestataire", target = "id")
@@ -18,10 +18,6 @@ public interface PrestataireMapper {
 
     @Mapping(source = "id", target = "idPrestataire")
     @Mapping(source = "type", target = "typePrestataire")
-    @Mapping(target = "prenom", ignore = true)
-    @Mapping(target = "specialite", ignore = true)
-    @Mapping(target = "tarifJournalier", ignore = true)
-    @Mapping(target = "actif", ignore = true)
     Prestataire toEntity(PrestataireDTO dto);
 
     List<PrestataireDTO> toDTOList(List<Prestataire> list);
@@ -34,4 +30,3 @@ public interface PrestataireMapper {
         return value == null || value.isBlank() ? null : TypePrestataire.valueOf(value);
     }
 }
-

@@ -16,25 +16,25 @@ public class AudienceController {
     private final AudienceService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public AudienceDTO create(@RequestBody AudienceDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public AudienceDTO update(@PathVariable Long id, @RequestBody AudienceDTO dto) {
         return service.update(id, dto);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<AudienceDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public AudienceDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }

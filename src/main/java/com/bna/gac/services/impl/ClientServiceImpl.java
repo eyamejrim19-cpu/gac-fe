@@ -192,7 +192,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<ClientDTO> getAll() {
-        return List.of();
+        return repo.findAll().stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     @Transactional

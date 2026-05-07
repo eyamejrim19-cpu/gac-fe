@@ -16,31 +16,31 @@ public class RisqueController {
     private final RisqueService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public RisqueDTO create(@RequestBody RisqueDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public RisqueDTO update(@PathVariable Long id, @RequestBody RisqueDTO dto) {
         return service.update(id, dto);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<RisqueDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/dossier/{dossierId}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<RisqueDTO> getByDossier(@PathVariable Long dossierId) {
         return service.getByDossierId(dossierId);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public RisqueDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }

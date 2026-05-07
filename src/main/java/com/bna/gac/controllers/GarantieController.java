@@ -16,25 +16,25 @@ public class GarantieController {
     private final GarantieService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public GarantieDTO create(@RequestBody GarantieDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public GarantieDTO update(@PathVariable Long id, @RequestBody GarantieDTO dto) {
         return service.update(id, dto);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<GarantieDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public GarantieDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }

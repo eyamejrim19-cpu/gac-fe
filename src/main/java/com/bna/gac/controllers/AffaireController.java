@@ -16,31 +16,31 @@ public class AffaireController {
     private final AffaireService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public AffaireDTO create(@RequestBody AffaireDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
     public AffaireDTO update(@PathVariable Long id, @RequestBody AffaireDTO dto) {
         return service.update(id, dto);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<AffaireDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/dossier/{dossierId}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<AffaireDTO> getByDossier(@PathVariable Long dossierId) {
         return service.getByDossierId(dossierId);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGE_DOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public AffaireDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }
