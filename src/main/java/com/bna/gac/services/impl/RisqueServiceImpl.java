@@ -38,7 +38,7 @@ public class RisqueServiceImpl implements RisqueService {
         risque.setMontantInteret(dto.getMontantInteret());
         risque.setMontantTotal(dto.getMontantTotal());
         risque.setTauxInteret(dto.getTauxInteret());
-        risque.setPeriode(dto.getPeriode() == null || dto.getPeriode().isBlank() ? null : Integer.valueOf(dto.getPeriode()));
+        risque.setPeriode(dto.getPeriode());
         risque.setDateContrat(dto.getDateContrat() == null ? null : dto.getDateContrat().atStartOfDay());
         risque.setDateDeblocage(dto.getDateDeblocage() == null ? null : dto.getDateDeblocage().atStartOfDay());
         risque.setDateEcheance(dto.getDateEcheance() == null ? null : dto.getDateEcheance().atStartOfDay());

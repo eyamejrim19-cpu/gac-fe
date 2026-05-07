@@ -20,7 +20,7 @@ public class RisqueDTO {
 
     private Double tauxInteret;
 
-    private String periode;
+    private Integer periode;
 
     private LocalDate dateContrat;
 

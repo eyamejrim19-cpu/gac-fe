@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -20,4 +22,12 @@ public interface AudienceMapper {
     Audience toEntity(AudienceDTO dto);
 
     List<AudienceDTO> toDtoList(List<Audience> entities);
+
+    default LocalDate map(LocalDateTime value) {
+        return value == null ? null : value.toLocalDate();
+    }
+
+    default LocalDateTime map(LocalDate value) {
+        return value == null ? null : value.atStartOfDay();
+    }
 }

@@ -12,7 +12,11 @@ import java.util.List;
 public interface DossierContentieuxMapper {
 
     @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "client.nom", target = "clientNom")
+    @Mapping(source = "client.prenom", target = "clientPrenom")
     @Mapping(source = "chargeDossier.id", target = "chargeDossierId")
+    @Mapping(source = "chargeDossier.nom", target = "chargeDossierNom")
+    @Mapping(source = "chargeDossier.prenom", target = "chargeDossierPrenom")
     DossierContentieuxDTO toDto(DossierContentieux entity);
 
     @Mapping(source = "clientId", target = "client.id")

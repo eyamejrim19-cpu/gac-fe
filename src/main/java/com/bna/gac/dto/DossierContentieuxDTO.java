@@ -19,6 +19,10 @@ public class DossierContentieuxDTO {
     private Double montantRecupere;
 
     private Long clientId;
+    private String clientNom;
+    private String clientPrenom;
     private Long chargeDossierId;
+    private String chargeDossierNom;
+    private String chargeDossierPrenom;
 }
 
