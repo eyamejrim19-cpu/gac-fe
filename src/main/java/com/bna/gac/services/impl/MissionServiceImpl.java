@@ -39,9 +39,10 @@ public class MissionServiceImpl implements MissionService {
         Mission mission = findMission(id);
         mission.setTypeMission(dto.getTypeMission());
         mission.setDateDebut(dto.getDateDebut().atStartOfDay());
-        mission.setDateFin(dto.getDateFin().atStartOfDay());
+        mission.setDateFin(dto.getDateFin() != null ? dto.getDateFin().atStartOfDay() : null);
         mission.setStatut(dto.getStatut());
         mission.setResultat(dto.getResultat());
+        mission.setCommentaire(dto.getCommentaire());
 
         if (dto.getPrestataireId() != null) {
             mission.setPrestataire(findPrestataire(dto.getPrestataireId()));
@@ -83,4 +84,7 @@ public class MissionServiceImpl implements MissionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }
 }
+
+
+
 

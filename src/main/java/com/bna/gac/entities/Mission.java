@@ -25,6 +25,7 @@ public class Mission {
     private LocalDateTime dateFin;
     private String statut;
     private String resultat;
+    private String commentaire;
 
     @ManyToOne
     @JoinColumn(name = "affaire_id")
@@ -37,4 +38,3 @@ public class Mission {
     @OneToMany(mappedBy = "mission")
     private Set<Facture> factures;
 }
-

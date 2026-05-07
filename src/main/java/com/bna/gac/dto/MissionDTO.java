@@ -13,8 +13,8 @@ public class MissionDTO {
     private LocalDate dateFin;
     private String statut;
     private String resultat;
+    private String commentaire;
 
     private Long prestataireId;
     private Long affaireId;
 }
-
