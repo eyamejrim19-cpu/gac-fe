@@ -11,10 +11,12 @@ public class FactureDTO {
     private Long id;
     private String numero;
     private LocalDate dateEmission;
+    private LocalDate dateEcheance;
     private Double montant;
     private String statut;
     private String typeFacture;
 
     private Long missionId;
+    private Long dossierId;
 }
 

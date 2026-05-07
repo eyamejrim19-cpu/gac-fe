@@ -14,9 +14,12 @@ public interface FactureMapper {
 
     @Mapping(source = "mission.idMission", target = "missionId")
     @Mapping(source = "idFacture", target = "id")
+    @Mapping(target = "dateEcheance", ignore = true)
+    @Mapping(target = "dossierId", ignore = true)
     FactureDTO toDto(Facture entity);
 
     @Mapping(target = "mission", ignore = true)
+    @Mapping(target = "idFacture", ignore = true)
     Facture toEntity(FactureDTO dto);
 
     default LocalDate map(LocalDateTime value) {

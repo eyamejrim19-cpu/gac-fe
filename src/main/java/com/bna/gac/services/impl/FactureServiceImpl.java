@@ -33,7 +33,9 @@ public class FactureServiceImpl implements FactureService {
     public FactureDTO update(Long id, FactureDTO dto) {
         Facture existing = findFacture(id);
         existing.setNumero(dto.getNumero());
-        existing.setDateEmission(dto.getDateEmission().atStartOfDay());
+        if (dto.getDateEmission() != null) {
+            existing.setDateEmission(dto.getDateEmission().atStartOfDay());
+        }
         existing.setMontant(dto.getMontant());
         existing.setStatut(dto.getStatut());
         existing.setTypeFacture(dto.getTypeFacture());

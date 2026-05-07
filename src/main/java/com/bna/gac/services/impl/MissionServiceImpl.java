@@ -80,6 +80,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     private Affaire findAffaire(Long affaireId) {
+        if (affaireId == null) return null;
         return affaireRepository.findById(affaireId)
                 .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }
