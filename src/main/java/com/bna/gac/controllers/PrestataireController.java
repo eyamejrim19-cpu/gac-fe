@@ -17,7 +17,7 @@ public class PrestataireController {
     private final PrestataireService prestataireService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public PrestataireDTO create(@RequestBody PrestataireDTO prestataire) {
         return prestataireService.create(prestataire);
     }
@@ -41,19 +41,19 @@ public class PrestataireController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public PrestataireDTO update(@PathVariable Long id, @RequestBody PrestataireDTO prestataire) {
         return prestataireService.update(id, prestataire);
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public PrestataireDTO updateStatus(@PathVariable Long id, @RequestParam boolean actif) {
         return prestataireService.updateStatus(id, actif);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         prestataireService.delete(id);
     }

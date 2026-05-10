@@ -28,20 +28,20 @@ public class FactureController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public FactureDTO createFacture(@RequestBody FactureDTO facture) {
         return factureService.create(facture);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public FactureDTO updateFacture(@PathVariable Long id, @RequestBody FactureDTO facture) {
         facture.setIdFacture(id);
         return factureService.update(id, facture);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void deleteFacture(@PathVariable Long id) {
         factureService.delete(id);
     }

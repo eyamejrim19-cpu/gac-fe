@@ -55,6 +55,11 @@ public class AudienceServiceImpl implements AudienceService {
     }
 
     @Override
+    public List<AudienceDTO> getByAffaireId(Long affaireId) {
+        return mapper.toDtoList(audienceRepository.findByAffaire_IdAffaire(affaireId));
+    }
+
+    @Override
     public void delete(Long id) {
         audienceRepository.delete(findAudience(id));
     }

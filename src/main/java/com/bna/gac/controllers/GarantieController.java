@@ -16,13 +16,13 @@ public class GarantieController {
     private final GarantieService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public GarantieDTO create(@RequestBody GarantieDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public GarantieDTO update(@PathVariable Long id, @RequestBody GarantieDTO dto) {
         return service.update(id, dto);
     }
@@ -40,7 +40,7 @@ public class GarantieController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

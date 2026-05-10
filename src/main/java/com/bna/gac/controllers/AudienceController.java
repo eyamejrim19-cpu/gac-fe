@@ -16,13 +16,13 @@ public class AudienceController {
     private final AudienceService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public AudienceDTO create(@RequestBody AudienceDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public AudienceDTO update(@PathVariable Long id, @RequestBody AudienceDTO dto) {
         return service.update(id, dto);
     }
@@ -33,6 +33,12 @@ public class AudienceController {
         return service.getAll();
     }
 
+    @GetMapping("/affaire/{affaireId}")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    public List<AudienceDTO> getByAffaire(@PathVariable Long affaireId) {
+        return service.getByAffaireId(affaireId);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public AudienceDTO getById(@PathVariable Long id) {
@@ -40,7 +46,7 @@ public class AudienceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

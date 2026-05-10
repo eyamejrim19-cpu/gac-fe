@@ -112,6 +112,17 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(r -> "ADMIN".equals(r.getName()));
+
+        if (isAdmin) {
+            long adminCount = userRepository.countAdmins();
+            if (adminCount <= 1) {
+                throw new BadRequestException("Impossible de supprimer le dernier administrateur. Au moins un administrateur doit exister.");
+            }
+        }
+
         userRepository.delete(user);
     }
 

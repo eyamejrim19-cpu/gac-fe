@@ -14,6 +14,8 @@ public interface AudienceService {
 
     AudienceDTO getById(Long id);
 
+    List<AudienceDTO> getByAffaireId(Long affaireId);
+
     void delete(Long id);
 }
 

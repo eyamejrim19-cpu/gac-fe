@@ -65,6 +65,11 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    public List<MissionDTO> getByAffaireId(Long affaireId) {
+        return missionMapper.toDtoList(missionRepository.findByAffaire_IdAffaire(affaireId));
+    }
+
+    @Override
     public void delete(Long id) {
         missionRepository.delete(findMission(id));
     }

@@ -17,7 +17,7 @@ public class ClientController {
     private final ClientService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public ClientDTO create(@RequestBody ClientDTO dto) {
         return service.create(dto);
     }
@@ -35,21 +35,20 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public ClientDTO update(@PathVariable Long id, @RequestBody ClientDTO dto) {
         return service.update(id, dto);
     }
 
-    
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
     public ClientDTO updateStatus(@PathVariable Long id, @RequestBody com.bna.gac.dto.StatusUpdateDTO dto) {
         return service.updateStatus(id, dto);
     }
+
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }
-

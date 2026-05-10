@@ -22,13 +22,13 @@ public class DossierController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public DossierContentieuxDTO create(@RequestBody DossierContentieuxDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public DossierContentieuxDTO update(@PathVariable Long id, @RequestBody DossierContentieuxDTO dto) {
         return service.update(id, dto);
     }
@@ -46,7 +46,7 @@ public class DossierController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

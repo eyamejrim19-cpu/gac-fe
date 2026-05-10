@@ -16,13 +16,13 @@ public class AffaireController {
     private final AffaireService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public AffaireDTO create(@RequestBody AffaireDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public AffaireDTO update(@PathVariable Long id, @RequestBody AffaireDTO dto) {
         return service.update(id, dto);
     }
@@ -46,7 +46,7 @@ public class AffaireController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

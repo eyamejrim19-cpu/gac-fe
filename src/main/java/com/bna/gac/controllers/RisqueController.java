@@ -16,13 +16,13 @@ public class RisqueController {
     private final RisqueService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public RisqueDTO create(@RequestBody RisqueDTO dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public RisqueDTO update(@PathVariable Long id, @RequestBody RisqueDTO dto) {
         return service.update(id, dto);
     }
@@ -46,7 +46,7 @@ public class RisqueController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
