@@ -27,8 +27,8 @@ public interface HuissierMapper {
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "typePrestataire", ignore = true)
     @Mapping(target = "zoneIntervention", ignore = true)
+    @Mapping(target = "rib", ignore = true)
     Huissier toEntity(HuissierDTO dto);
 
     List<HuissierDTO> toDtoList(List<Huissier> list);
 }
-

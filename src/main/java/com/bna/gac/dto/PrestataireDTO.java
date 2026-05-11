@@ -18,4 +18,6 @@ public class PrestataireDTO {
     private String specialite;
     private Double tarifJournalier;
     private boolean actif;
+    private String rib;
 }
+

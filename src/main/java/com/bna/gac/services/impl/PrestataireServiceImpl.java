@@ -48,6 +48,7 @@ public class PrestataireServiceImpl implements PrestataireService {
         existing.setEmail(prestataire.getEmail());
         existing.setAdresse(prestataire.getAdresse());
         existing.setTypePrestataire(prestataireMapper.map(prestataire.getType()));
+        existing.setRib(prestataire.getRib());
         return prestataireMapper.toDTO(prestataireRepository.save(existing));
     }
 
@@ -68,4 +69,5 @@ public class PrestataireServiceImpl implements PrestataireService {
                 .orElseThrow(() -> new ResourceNotFoundException("Prestataire not found"));
     }
 }
+
 

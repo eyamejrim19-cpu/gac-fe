@@ -26,8 +26,8 @@ public interface ExpertMapper {
     @Mapping(target = "tarifJournalier", ignore = true)
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "typePrestataire", ignore = true)
+    @Mapping(target = "rib", ignore = true)
     Expert toEntity(ExpertDTO dto);
 
     List<ExpertDTO> toDtoList(List<Expert> list);
 }
-

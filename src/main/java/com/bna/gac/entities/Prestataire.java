@@ -25,6 +25,8 @@ public class Prestataire {
 
     private boolean actif;
 
+    private String rib;
+
     @Enumerated(EnumType.STRING)
     private TypePrestataire typePrestataire;
 
@@ -32,4 +34,5 @@ public class Prestataire {
         return actif;
     }
 }
+
 

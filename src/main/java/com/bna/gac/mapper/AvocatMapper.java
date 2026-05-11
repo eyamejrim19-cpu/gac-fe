@@ -26,8 +26,8 @@ public interface AvocatMapper {
     @Mapping(target = "tarifJournalier", ignore = true)
     @Mapping(target = "actif", ignore = true)
     @Mapping(target = "typePrestataire", ignore = true)
+    @Mapping(target = "rib", ignore = true)
     Avocat toEntity(AvocatDTO dto);
 
     List<AvocatDTO> toDtoList(List<Avocat> list);
 }
-
