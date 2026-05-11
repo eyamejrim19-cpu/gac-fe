@@ -46,7 +46,7 @@ public class RisqueController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

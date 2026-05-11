@@ -74,6 +74,26 @@ public class MissionServiceImpl implements MissionService {
         missionRepository.delete(findMission(id));
     }
 
+    @Override
+    public MissionDTO validate(Long id) {
+        Mission mission = findMission(id);
+        if ("TERMINEE".equals(mission.getStatut()) || "ANNULEE".equals(mission.getStatut())) {
+            throw new com.bna.gac.exceptions.BadRequestException("La mission est déjà terminée ou annulée");
+        }
+        mission.setStatut("TERMINEE");
+        return missionMapper.toDto(missionRepository.save(mission));
+    }
+
+    @Override
+    public MissionDTO reject(Long id) {
+        Mission mission = findMission(id);
+        if ("TERMINEE".equals(mission.getStatut()) || "ANNULEE".equals(mission.getStatut())) {
+            throw new com.bna.gac.exceptions.BadRequestException("La mission est déjà terminée ou annulée");
+        }
+        mission.setStatut("EN_COURS");
+        return missionMapper.toDto(missionRepository.save(mission));
+    }
+
     private Mission findMission(Long id) {
         return missionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
@@ -85,7 +105,9 @@ public class MissionServiceImpl implements MissionService {
     }
 
     private Affaire findAffaire(Long affaireId) {
-        if (affaireId == null) return null;
+        if (affaireId == null) {
+            throw new com.bna.gac.exceptions.BadRequestException("Une mission doit être liée à une affaire");
+        }
         return affaireRepository.findById(affaireId)
                 .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
     }

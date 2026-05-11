@@ -33,6 +33,20 @@ public class DossierController {
         return service.update(id, dto);
     }
 
+    // Responsable validates a dossier (sets status to VALIDE)
+    @PutMapping("/{id}/validate")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public DossierContentieuxDTO validateDossier(@PathVariable Long id) {
+        return service.validate(id);
+    }
+
+    // Responsable rejects a dossier (sets status back to EN_COURS)
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public DossierContentieuxDTO rejectDossier(@PathVariable Long id) {
+        return service.reject(id);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<DossierContentieuxDTO> getAll() {
@@ -46,7 +60,7 @@ public class DossierController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

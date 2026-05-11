@@ -27,21 +27,37 @@ public class FactureController {
         return factureService.getById(id);
     }
 
+    // Only ChargeDossier creates factures
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public FactureDTO createFacture(@RequestBody FactureDTO facture) {
         return factureService.create(facture);
     }
 
+    // Only ChargeDossier updates facture content
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public FactureDTO updateFacture(@PathVariable Long id, @RequestBody FactureDTO facture) {
         facture.setIdFacture(id);
         return factureService.update(id, facture);
     }
 
-    @DeleteMapping("/{id}")
+    // Responsable validates a facture (sets status to VALIDEE)
+    @PutMapping("/{id}/validate")
     @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public FactureDTO validateFacture(@PathVariable Long id) {
+        return factureService.validate(id);
+    }
+
+    // Responsable rejects a facture (sets status to REJETEE)
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public FactureDTO rejectFacture(@PathVariable Long id) {
+        return factureService.reject(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void deleteFacture(@PathVariable Long id) {
         factureService.delete(id);
     }

@@ -33,20 +33,36 @@ public class MissionController {
         return missionService.getById(id);
     }
 
+    // Only ChargeDossier creates and manages missions
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public MissionDTO createMission(@RequestBody MissionDTO dto) {
         return missionService.create(dto);
     }
 
+    // ChargeDossier updates mission content; Responsable validates via /validate endpoint
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public MissionDTO updateMission(@PathVariable Long id, @RequestBody MissionDTO dto) {
         return missionService.update(id, dto);
     }
 
-    @DeleteMapping("/{id}")
+    // Responsable validates a mission (sets status to VALIDEE)
+    @PutMapping("/{id}/validate")
     @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public MissionDTO validateMission(@PathVariable Long id) {
+        return missionService.validate(id);
+    }
+
+    // Responsable rejects a mission (sets status back to EN_COURS)
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public MissionDTO rejectMission(@PathVariable Long id) {
+        return missionService.reject(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void deleteMission(@PathVariable Long id) {
         missionService.delete(id);
     }

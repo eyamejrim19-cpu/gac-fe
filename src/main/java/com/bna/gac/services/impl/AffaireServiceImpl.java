@@ -95,6 +95,26 @@ public class AffaireServiceImpl implements AffaireService {
         affaireRepository.delete(affaire);
     }
 
+    @Override
+    public AffaireDTO validate(Long id) {
+        Affaire affaire = findAffaire(id);
+        if (affaire.getStatut() == AffaireStatus.TERMINEE) {
+            throw new BadRequestException("L'affaire est déjà terminée");
+        }
+        affaire.setStatut(AffaireStatus.TERMINEE);
+        return mapper.toDto(affaireRepository.save(affaire));
+    }
+
+    @Override
+    public AffaireDTO reject(Long id) {
+        Affaire affaire = findAffaire(id);
+        if (affaire.getStatut() == AffaireStatus.TERMINEE) {
+            throw new BadRequestException("L'affaire est déjà terminée");
+        }
+        affaire.setStatut(AffaireStatus.EN_COURS);
+        return mapper.toDto(affaireRepository.save(affaire));
+    }
+
     private void validateStatusTransition(AffaireStatus current, AffaireStatus next) {
         if (current == AffaireStatus.TERMINEE) {
             throw new BadRequestException("Cannot modify a finished case (Affaire)");

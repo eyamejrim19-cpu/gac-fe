@@ -17,5 +17,9 @@ public interface MissionService {
     void delete(Long id);
 
     List<MissionDTO> getByAffaireId(Long affaireId);
+
+    MissionDTO validate(Long id);
+
+    MissionDTO reject(Long id);
 }
 

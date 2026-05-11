@@ -20,5 +20,9 @@ public interface DossierContentieuxService {
     void delete(Long id);
 
     DashboardStatsDTO getStats();
+
+    DossierContentieuxDTO validate(Long id);
+
+    DossierContentieuxDTO reject(Long id);
 }
 

@@ -27,6 +27,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/chargedossiers")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<UserResponseDTO>> getChargeDossiers() {
+        List<UserResponseDTO> users = userService.getAll().stream()
+                .filter(u -> u.getRoles() != null && u.getRoles().contains("CHARGEDOSSIER"))
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO> getMe(

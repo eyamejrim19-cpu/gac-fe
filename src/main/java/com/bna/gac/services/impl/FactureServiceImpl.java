@@ -61,6 +61,26 @@ public class FactureServiceImpl implements FactureService {
         factureRepository.delete(findFacture(id));
     }
 
+    @Override
+    public FactureDTO validate(Long id) {
+        Facture facture = findFacture(id);
+        if ("VALIDEE".equals(facture.getStatut()) || "PAYEE".equals(facture.getStatut())) {
+            throw new com.bna.gac.exceptions.BadRequestException("La facture est déjà validée ou payée");
+        }
+        facture.setStatut("VALIDEE");
+        return factureMapper.toDto(factureRepository.save(facture));
+    }
+
+    @Override
+    public FactureDTO reject(Long id) {
+        Facture facture = findFacture(id);
+        if ("VALIDEE".equals(facture.getStatut()) || "PAYEE".equals(facture.getStatut())) {
+            throw new com.bna.gac.exceptions.BadRequestException("La facture est déjà validée ou payée");
+        }
+        facture.setStatut("REJETEE");
+        return factureMapper.toDto(factureRepository.save(facture));
+    }
+
     private Facture findFacture(Long id) {
         return factureRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Facture not found"));
@@ -68,7 +88,7 @@ public class FactureServiceImpl implements FactureService {
 
     private Mission getMission(Long missionId) {
         if (missionId == null) {
-            return null;
+            throw new com.bna.gac.exceptions.BadRequestException("Une facture doit être liée à une mission");
         }
         return missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));

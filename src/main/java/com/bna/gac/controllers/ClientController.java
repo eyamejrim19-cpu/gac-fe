@@ -16,8 +16,9 @@ public class ClientController {
 
     private final ClientService service;
 
+    // Only ChargeDossier manages clients (diagram: GererDossier implies client management)
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public ClientDTO create(@RequestBody ClientDTO dto) {
         return service.create(dto);
     }
@@ -35,19 +36,19 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public ClientDTO update(@PathVariable Long id, @RequestBody ClientDTO dto) {
         return service.update(id, dto);
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public ClientDTO updateStatus(@PathVariable Long id, @RequestBody com.bna.gac.dto.StatusUpdateDTO dto) {
         return service.updateStatus(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

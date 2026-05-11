@@ -17,5 +17,9 @@ public interface AffaireService {
     AffaireDTO getById(Long id);
 
     void delete(Long id);
+
+    AffaireDTO validate(Long id);
+
+    AffaireDTO reject(Long id);
 }
 

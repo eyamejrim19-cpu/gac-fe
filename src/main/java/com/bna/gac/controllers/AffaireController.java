@@ -27,6 +27,20 @@ public class AffaireController {
         return service.update(id, dto);
     }
 
+    // Responsable validates an affaire (sets status to TERMINEE)
+    @PutMapping("/{id}/validate")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public AffaireDTO validateAffaire(@PathVariable Long id) {
+        return service.validate(id);
+    }
+
+    // Responsable rejects an affaire (sets status back to EN_COURS)
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public AffaireDTO rejectAffaire(@PathVariable Long id) {
+        return service.reject(id);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<AffaireDTO> getAll() {
@@ -46,7 +60,7 @@ public class AffaireController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

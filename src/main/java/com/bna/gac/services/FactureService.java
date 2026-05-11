@@ -14,5 +14,9 @@ public interface FactureService {
     List<FactureDTO> getAll();
 
     void delete(Long id);
+
+    FactureDTO validate(Long id);
+
+    FactureDTO reject(Long id);
 }
 

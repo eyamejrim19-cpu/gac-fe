@@ -4,6 +4,7 @@ public enum AffaireStatus {
     INITIEE,
     EN_COURS,
     JUGEMENT_RENDU,
+    EN_ATTENTE_VALIDATION,
     TERMINEE
 }
 

@@ -7,6 +7,6 @@ public enum DossierStatus {
     CLOTURE,
     SUSPENDU,
     TRANSFERE,
-    EN_ATTENTE
+    EN_ATTENTE_VALIDATION
 }
 

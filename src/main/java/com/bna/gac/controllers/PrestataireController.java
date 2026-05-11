@@ -16,8 +16,9 @@ public class PrestataireController {
 
     private final PrestataireService prestataireService;
 
+    // Only ChargeDossier manages prestataires (diagram: GererPrestataires)
     @PostMapping
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public PrestataireDTO create(@RequestBody PrestataireDTO prestataire) {
         return prestataireService.create(prestataire);
     }
@@ -41,19 +42,19 @@ public class PrestataireController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public PrestataireDTO update(@PathVariable Long id, @RequestBody PrestataireDTO prestataire) {
         return prestataireService.update(id, prestataire);
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public PrestataireDTO updateStatus(@PathVariable Long id, @RequestParam boolean actif) {
         return prestataireService.updateStatus(id, actif);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void delete(@PathVariable Long id) {
         prestataireService.delete(id);
     }

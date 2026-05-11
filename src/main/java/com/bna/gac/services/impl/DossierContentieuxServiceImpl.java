@@ -101,6 +101,28 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
     }
 
     @Override
+    public DossierContentieuxDTO validate(Long id) {
+        DossierContentieux dossier = findDossier(id);
+        if (dossier.getStatut() != DossierStatus.EN_ATTENTE_VALIDATION
+                && dossier.getStatut() != DossierStatus.EN_COURS) {
+            throw new BadRequestException("Le dossier doit être en cours ou en attente de validation pour être validé");
+        }
+        dossier.setStatut(DossierStatus.VALIDE);
+        return mapper.toDto(dossierRepository.save(dossier));
+    }
+
+    @Override
+    public DossierContentieuxDTO reject(Long id) {
+        DossierContentieux dossier = findDossier(id);
+        if (dossier.getStatut() != DossierStatus.EN_ATTENTE_VALIDATION
+                && dossier.getStatut() != DossierStatus.EN_COURS) {
+            throw new BadRequestException("Le dossier doit être en cours ou en attente de validation pour être rejeté");
+        }
+        dossier.setStatut(DossierStatus.EN_COURS);
+        return mapper.toDto(dossierRepository.save(dossier));
+    }
+
+    @Override
     public DashboardStatsDTO getStats() {
         DashboardStatsDTO dto = new DashboardStatsDTO();
         
@@ -125,7 +147,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         dto.setMissionsEnCours(missionRepository.countByStatut("EN_COURS"));
         dto.setMissionsTerminees(missionRepository.countByStatut("TERMINEE"));
         
-        dto.setFacturesEnAttente(factureRepository.countByStatut("EN_ATTENTE"));
+        dto.setFacturesEnAttente(factureRepository.countByStatut("EN_ATTENTE_VALIDATION"));
         dto.setFacturesPayees(factureRepository.countByStatut("PAYEE"));
 
         dto.setPrestatairesActifs(prestataireRepository.countByActif(true));
