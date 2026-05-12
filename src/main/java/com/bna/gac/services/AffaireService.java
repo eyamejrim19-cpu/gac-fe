@@ -20,6 +20,6 @@ public interface AffaireService {
 
     AffaireDTO validate(Long id);
 
-    AffaireDTO reject(Long id);
+    AffaireDTO reject(Long id, String commentaireRejet);
 }
 

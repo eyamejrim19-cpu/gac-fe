@@ -30,6 +30,7 @@ public class Affaire {
 
     private String tribunal;
     private String jugement;
+    private String commentaireRejet;
 
     @ManyToOne
     @JoinColumn(name = "dossier_id")

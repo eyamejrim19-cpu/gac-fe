@@ -43,8 +43,10 @@ public class DossierController {
     // Responsable rejects a dossier (sets status back to EN_COURS)
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('RESPONSABLE')")
-    public DossierContentieuxDTO rejectDossier(@PathVariable Long id) {
-        return service.reject(id);
+    public DossierContentieuxDTO rejectDossier(@PathVariable Long id,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
+        String commentaire = body != null ? body.get("commentaireRejet") : null;
+        return service.reject(id, commentaire);
     }
 
     @GetMapping

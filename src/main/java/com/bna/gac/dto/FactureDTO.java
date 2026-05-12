@@ -18,5 +18,6 @@ public class FactureDTO {
 
     private Long missionId;
     private Long dossierId;
+    private String commentaireRejet;
 }
 

@@ -17,4 +17,5 @@ public class AffaireDTO {
     private LocalDate dateDebut;
     private Long dossierId;
     private Long prestataireId;
+    private String commentaireRejet;
 }

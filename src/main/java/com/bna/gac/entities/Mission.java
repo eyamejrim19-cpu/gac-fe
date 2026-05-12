@@ -26,6 +26,7 @@ public class Mission {
     private String statut;
     private String resultat;
     private String commentaire;
+    private String commentaireRejet;
 
     @ManyToOne
     @JoinColumn(name = "affaire_id")

@@ -22,6 +22,7 @@ public class Facture {
     private Double montant;
     private String statut;
     private String typeFacture;
+    private String commentaireRejet;
 
     @ManyToOne
     @JoinColumn(name = "mission_id")

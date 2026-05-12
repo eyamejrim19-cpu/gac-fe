@@ -72,12 +72,13 @@ public class FactureServiceImpl implements FactureService {
     }
 
     @Override
-    public FactureDTO reject(Long id) {
+    public FactureDTO reject(Long id, String commentaireRejet) {
         Facture facture = findFacture(id);
         if ("VALIDEE".equals(facture.getStatut()) || "PAYEE".equals(facture.getStatut())) {
             throw new com.bna.gac.exceptions.BadRequestException("La facture est déjà validée ou payée");
         }
         facture.setStatut("REJETEE");
+        facture.setCommentaireRejet(commentaireRejet);
         return factureMapper.toDto(factureRepository.save(facture));
     }
 

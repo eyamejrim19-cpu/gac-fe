@@ -106,12 +106,13 @@ public class AffaireServiceImpl implements AffaireService {
     }
 
     @Override
-    public AffaireDTO reject(Long id) {
+    public AffaireDTO reject(Long id, String commentaireRejet) {
         Affaire affaire = findAffaire(id);
         if (affaire.getStatut() == AffaireStatus.TERMINEE) {
             throw new BadRequestException("L'affaire est déjà terminée");
         }
         affaire.setStatut(AffaireStatus.EN_COURS);
+        affaire.setCommentaireRejet(commentaireRejet);
         return mapper.toDto(affaireRepository.save(affaire));
     }
 

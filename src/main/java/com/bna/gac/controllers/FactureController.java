@@ -52,8 +52,10 @@ public class FactureController {
     // Responsable rejects a facture (sets status to REJETEE)
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('RESPONSABLE')")
-    public FactureDTO rejectFacture(@PathVariable Long id) {
-        return factureService.reject(id);
+    public FactureDTO rejectFacture(@PathVariable Long id,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
+        String commentaire = body != null ? body.get("commentaireRejet") : null;
+        return factureService.reject(id, commentaire);
     }
 
     @DeleteMapping("/{id}")

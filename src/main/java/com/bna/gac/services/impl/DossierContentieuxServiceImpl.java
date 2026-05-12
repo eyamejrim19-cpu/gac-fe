@@ -112,13 +112,14 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
     }
 
     @Override
-    public DossierContentieuxDTO reject(Long id) {
+    public DossierContentieuxDTO reject(Long id, String commentaireRejet) {
         DossierContentieux dossier = findDossier(id);
         if (dossier.getStatut() != DossierStatus.EN_ATTENTE_VALIDATION
                 && dossier.getStatut() != DossierStatus.EN_COURS) {
             throw new BadRequestException("Le dossier doit être en cours ou en attente de validation pour être rejeté");
         }
         dossier.setStatut(DossierStatus.EN_COURS);
+        dossier.setCommentaireRejet(commentaireRejet);
         return mapper.toDto(dossierRepository.save(dossier));
     }
 
@@ -170,7 +171,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         if (id == null) {
             return null;
         }
-        return chargeDossierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Charge dossier not found"));
+        // Try ChargeDossier subtype first; if not found (dtype mismatch), return null gracefully
+        return chargeDossierRepository.findById(id).orElse(null);
     }
 }

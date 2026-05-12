@@ -85,12 +85,13 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public MissionDTO reject(Long id) {
+    public MissionDTO reject(Long id, String commentaireRejet) {
         Mission mission = findMission(id);
         if ("TERMINEE".equals(mission.getStatut()) || "ANNULEE".equals(mission.getStatut())) {
             throw new com.bna.gac.exceptions.BadRequestException("La mission est déjà terminée ou annulée");
         }
         mission.setStatut("EN_COURS");
+        mission.setCommentaireRejet(commentaireRejet);
         return missionMapper.toDto(missionRepository.save(mission));
     }
 

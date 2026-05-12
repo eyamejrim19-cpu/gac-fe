@@ -24,5 +24,6 @@ public class DossierContentieuxDTO {
     private Long chargeDossierId;
     private String chargeDossierNom;
     private String chargeDossierPrenom;
+    private String commentaireRejet;
 }
 

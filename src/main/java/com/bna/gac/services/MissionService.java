@@ -20,6 +20,6 @@ public interface MissionService {
 
     MissionDTO validate(Long id);
 
-    MissionDTO reject(Long id);
+    MissionDTO reject(Long id, String commentaireRejet);
 }
 

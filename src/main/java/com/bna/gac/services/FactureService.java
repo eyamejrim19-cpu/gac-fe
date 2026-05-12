@@ -17,6 +17,6 @@ public interface FactureService {
 
     FactureDTO validate(Long id);
 
-    FactureDTO reject(Long id);
+    FactureDTO reject(Long id, String commentaireRejet);
 }
 

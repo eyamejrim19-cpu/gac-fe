@@ -57,8 +57,10 @@ public class MissionController {
     // Responsable rejects a mission (sets status back to EN_COURS)
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('RESPONSABLE')")
-    public MissionDTO rejectMission(@PathVariable Long id) {
-        return missionService.reject(id);
+    public MissionDTO rejectMission(@PathVariable Long id,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
+        String commentaire = body != null ? body.get("commentaireRejet") : null;
+        return missionService.reject(id, commentaire);
     }
 
     @DeleteMapping("/{id}")

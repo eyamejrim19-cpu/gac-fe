@@ -28,6 +28,7 @@ public class DossierContentieux {
     private LocalDateTime dateCloture;
     private Double montantInitial;
     private Double montantRecupere;
+    private String commentaireRejet;
 
     @ManyToOne
     @JoinColumn(name = "charge_dossier_id")

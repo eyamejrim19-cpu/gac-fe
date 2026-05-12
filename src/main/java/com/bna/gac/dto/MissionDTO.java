@@ -17,4 +17,5 @@ public class MissionDTO {
 
     private Long prestataireId;
     private Long affaireId;
+    private String commentaireRejet;
 }
