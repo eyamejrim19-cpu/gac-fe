@@ -49,6 +49,20 @@ public class DossierController {
         return service.reject(id, commentaire);
     }
 
+    // ChargeDossier requests closure (sets status to EN_ATTENTE_CLOTURE)
+    @PutMapping("/{id}/request-closure")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
+    public DossierContentieuxDTO requestClosure(@PathVariable Long id) {
+        return service.requestClosure(id);
+    }
+
+    // Responsable validates closure (sets status to CLOTURE)
+    @PutMapping("/{id}/close")
+    @PreAuthorize("hasAnyRole('RESPONSABLE')")
+    public DossierContentieuxDTO closeDossier(@PathVariable Long id) {
+        return service.close(id);
+    }
+
     @GetMapping
     @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public List<DossierContentieuxDTO> getAll() {

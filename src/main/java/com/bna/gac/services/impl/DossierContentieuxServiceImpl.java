@@ -10,7 +10,8 @@ import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.DossierContentieuxMapper;
 import com.bna.gac.repositories.*;
-import com.bna.gac.services.DossierContentieuxService;import lombok.RequiredArgsConstructor;
+import com.bna.gac.services.DossierContentieuxService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,7 +159,27 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         return dto;
     }
 
-    /** Converts entity to DTO and injects calculated financial amounts. */
+    @Override
+    public DossierContentieuxDTO requestClosure(Long id) {
+        DossierContentieux dossier = findDossier(id);
+        if (dossier.getStatut() != DossierStatus.EN_COURS
+                && dossier.getStatut() != DossierStatus.VALIDE) {
+            throw new BadRequestException("Le dossier doit être en cours ou validé pour demander la clôture");
+        }
+        dossier.setStatut(DossierStatus.EN_ATTENTE_CLOTURE);
+        return toDtoWithAmounts(dossierRepository.save(dossier));
+    }
+
+    @Override
+    public DossierContentieuxDTO close(Long id) {
+        DossierContentieux dossier = findDossier(id);
+        if (dossier.getStatut() != DossierStatus.EN_ATTENTE_CLOTURE) {
+            throw new BadRequestException("Le dossier doit être en attente de clôture pour être clôturé");
+        }
+        dossier.setStatut(DossierStatus.CLOTURE);
+        dossier.setDateCloture(java.time.LocalDateTime.now());
+        return toDtoWithAmounts(dossierRepository.save(dossier));
+    }
     private DossierContentieuxDTO toDtoWithAmounts(DossierContentieux dossier) {
         DossierContentieuxDTO dto = mapper.toDto(dossier);
         Long id = dossier.getIdDossier();

@@ -24,5 +24,9 @@ public interface DossierContentieuxService {
     DossierContentieuxDTO validate(Long id);
 
     DossierContentieuxDTO reject(Long id, String commentaireRejet);
+
+    DossierContentieuxDTO requestClosure(Long id);
+
+    DossierContentieuxDTO close(Long id);
 }
 
