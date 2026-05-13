@@ -11,6 +11,7 @@ import com.bna.gac.services.FactureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,9 @@ public class FactureServiceImpl implements FactureService {
     @Override
     public FactureDTO create(FactureDTO dto) {
         Facture facture = factureMapper.toEntity(dto);
-        facture.setMission(getMission(dto.getMissionId()));
+        if (dto.getMissionId() != null) {
+            facture.setMission(getMission(dto.getMissionId()));
+        }
         return factureMapper.toDto(factureRepository.save(facture));
     }
 
@@ -39,7 +42,10 @@ public class FactureServiceImpl implements FactureService {
         existing.setMontant(dto.getMontant());
         existing.setStatut(dto.getStatut());
         existing.setTypeFacture(dto.getTypeFacture());
-        existing.setMission(getMission(dto.getMissionId()));
+        existing.setTypePaiement(dto.getTypePaiement());
+        if (dto.getMissionId() != null) {
+            existing.setMission(getMission(dto.getMissionId()));
+        }
         return factureMapper.toDto(factureRepository.save(existing));
     }
 
@@ -65,7 +71,7 @@ public class FactureServiceImpl implements FactureService {
     public FactureDTO validate(Long id) {
         Facture facture = findFacture(id);
         if ("VALIDEE".equals(facture.getStatut()) || "PAYEE".equals(facture.getStatut())) {
-            throw new com.bna.gac.exceptions.BadRequestException("La facture est déjà validée ou payée");
+            throw new com.bna.gac.exceptions.BadRequestException("La facture est deja validee ou payee");
         }
         facture.setStatut("VALIDEE");
         return factureMapper.toDto(factureRepository.save(facture));
@@ -75,10 +81,21 @@ public class FactureServiceImpl implements FactureService {
     public FactureDTO reject(Long id, String commentaireRejet) {
         Facture facture = findFacture(id);
         if ("VALIDEE".equals(facture.getStatut()) || "PAYEE".equals(facture.getStatut())) {
-            throw new com.bna.gac.exceptions.BadRequestException("La facture est déjà validée ou payée");
+            throw new com.bna.gac.exceptions.BadRequestException("La facture est deja validee ou payee");
         }
         facture.setStatut("REJETEE");
         facture.setCommentaireRejet(commentaireRejet);
+        return factureMapper.toDto(factureRepository.save(facture));
+    }
+
+    @Override
+    public FactureDTO pay(Long id) {
+        Facture facture = findFacture(id);
+        if (!"VALIDEE".equals(facture.getStatut())) {
+            throw new com.bna.gac.exceptions.BadRequestException("La facture doit etre VALIDEE avant d'etre payee");
+        }
+        facture.setStatut("PAYEE");
+        facture.setDatePaiement(LocalDateTime.now());
         return factureMapper.toDto(factureRepository.save(facture));
     }
 
@@ -88,9 +105,6 @@ public class FactureServiceImpl implements FactureService {
     }
 
     private Mission getMission(Long missionId) {
-        if (missionId == null) {
-            throw new com.bna.gac.exceptions.BadRequestException("Une facture doit être liée à une mission");
-        }
         return missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found"));
     }

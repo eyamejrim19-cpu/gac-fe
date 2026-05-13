@@ -39,11 +39,7 @@ public class Affaire {
     @ManyToOne
     @JoinColumn(name = "prestataire_id")
     private Prestataire prestataire;
-
-    @OneToMany(mappedBy = "affaire")
-    private Set<Mission> missions;
-
-    @OneToMany(mappedBy = "affaire")
+@OneToMany(mappedBy = "affaire")
     private Set<Audience> audiences;
 
     @Column(updatable = false)
@@ -62,3 +58,4 @@ public class Affaire {
         updatedAt = LocalDateTime.now();
     }
 }
+

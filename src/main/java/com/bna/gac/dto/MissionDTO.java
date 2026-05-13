@@ -14,8 +14,8 @@ public class MissionDTO {
     private String statut;
     private String resultat;
     private String commentaire;
+    private String commentaireRejet;
 
     private Long prestataireId;
-    private Long affaireId;
-    private String commentaireRejet;
+    private Long dossierId;
 }

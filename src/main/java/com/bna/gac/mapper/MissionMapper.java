@@ -14,11 +14,11 @@ import java.util.List;
 public interface MissionMapper {
 
     @Mapping(source = "prestataire.idPrestataire", target = "prestataireId")
-    @Mapping(source = "affaire.idAffaire", target = "affaireId")
+    @Mapping(source = "dossier.idDossier", target = "dossierId")
     MissionDTO toDto(Mission entity);
 
     @Mapping(source = "prestataireId", target = "prestataire.idPrestataire")
-    @Mapping(source = "affaireId", target = "affaire.idAffaire")
+    @Mapping(source = "dossierId", target = "dossier.idDossier")
     @Mapping(target = "factures", ignore = true)
     Mission toEntity(MissionDTO dto);
 
@@ -32,4 +32,3 @@ public interface MissionMapper {
         return value == null ? null : value.atStartOfDay();
     }
 }
-

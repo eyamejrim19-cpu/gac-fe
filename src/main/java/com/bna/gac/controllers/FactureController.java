@@ -58,9 +58,17 @@ public class FactureController {
         return factureService.reject(id, commentaire);
     }
 
+    // Responsable marks a facture as paid (sets status to PAYEE)
+    @PutMapping("/{id}/pay")
+    @PreAuthorize("hasAnyRole('RESPONSABLE', 'ADMIN')")
+    public FactureDTO payFacture(@PathVariable Long id) {
+        return factureService.pay(id);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
     public void deleteFacture(@PathVariable Long id) {
         factureService.delete(id);
     }
 }
+

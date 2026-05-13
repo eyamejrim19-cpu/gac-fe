@@ -29,8 +29,8 @@ public class Mission {
     private String commentaireRejet;
 
     @ManyToOne
-    @JoinColumn(name = "affaire_id")
-    private Affaire affaire;
+    @JoinColumn(name = "dossier_id")
+    private DossierContentieux dossier;
 
     @ManyToOne
     @JoinColumn(name = "prestataire_id")

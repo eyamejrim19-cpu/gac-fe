@@ -16,10 +16,14 @@ public interface FactureMapper {
     @Mapping(source = "idFacture", target = "id")
     @Mapping(target = "dateEcheance", ignore = true)
     @Mapping(target = "dossierId", ignore = true)
+    @Mapping(source = "datePaiement", target = "datePaiement")
+    @Mapping(source = "typePaiement", target = "typePaiement")
     FactureDTO toDto(Facture entity);
 
     @Mapping(target = "mission", ignore = true)
     @Mapping(target = "idFacture", ignore = true)
+    @Mapping(target = "datePaiement", ignore = true)
+    @Mapping(source = "typePaiement", target = "typePaiement")
     Facture toEntity(FactureDTO dto);
 
     default LocalDate map(LocalDateTime value) {
@@ -30,4 +34,3 @@ public interface FactureMapper {
         return value == null ? null : value.atStartOfDay();
     }
 }
-

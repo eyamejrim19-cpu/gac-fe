@@ -64,8 +64,10 @@ public class MissionController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHARGEDOSSIER')")
+    @PreAuthorize("hasAnyRole('CHARGEDOSSIER', 'RESPONSABLE', 'ADMIN')")
     public void deleteMission(@PathVariable Long id) {
         missionService.delete(id);
     }
 }
+
+

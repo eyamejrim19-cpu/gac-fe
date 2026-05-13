@@ -1,12 +1,13 @@
 package com.bna.gac.services.impl;
 
 import com.bna.gac.dto.MissionDTO;
-import com.bna.gac.entities.Affaire;
+import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.entities.Mission;
 import com.bna.gac.entities.Prestataire;
+import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.MissionMapper;
-import com.bna.gac.repositories.AffaireRepository;
+import com.bna.gac.repositories.DossierContentieuxRepository;
 import com.bna.gac.repositories.MissionRepository;
 import com.bna.gac.repositories.PrestataireRepository;
 import com.bna.gac.services.MissionService;
@@ -23,14 +24,14 @@ public class MissionServiceImpl implements MissionService {
 
     private final MissionRepository missionRepository;
     private final PrestataireRepository prestataireRepository;
-    private final AffaireRepository affaireRepository;
+    private final DossierContentieuxRepository dossierRepository;
     private final MissionMapper missionMapper;
 
     @Override
     public MissionDTO create(MissionDTO dto) {
         Mission mission = missionMapper.toEntity(dto);
         mission.setPrestataire(findPrestataire(dto.getPrestataireId()));
-        mission.setAffaire(findAffaire(dto.getAffaireId()));
+        mission.setDossier(findDossier(dto.getDossierId()));
         return missionMapper.toDto(missionRepository.save(mission));
     }
 
@@ -38,7 +39,9 @@ public class MissionServiceImpl implements MissionService {
     public MissionDTO update(Long id, MissionDTO dto) {
         Mission mission = findMission(id);
         mission.setTypeMission(dto.getTypeMission());
-        mission.setDateDebut(dto.getDateDebut().atStartOfDay());
+        if (dto.getDateDebut() != null) {
+            mission.setDateDebut(dto.getDateDebut().atStartOfDay());
+        }
         mission.setDateFin(dto.getDateFin() != null ? dto.getDateFin().atStartOfDay() : null);
         mission.setStatut(dto.getStatut());
         mission.setResultat(dto.getResultat());
@@ -47,8 +50,8 @@ public class MissionServiceImpl implements MissionService {
         if (dto.getPrestataireId() != null) {
             mission.setPrestataire(findPrestataire(dto.getPrestataireId()));
         }
-        if (dto.getAffaireId() != null) {
-            mission.setAffaire(findAffaire(dto.getAffaireId()));
+        if (dto.getDossierId() != null) {
+            mission.setDossier(findDossier(dto.getDossierId()));
         }
 
         return missionMapper.toDto(missionRepository.save(mission));
@@ -66,7 +69,7 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public List<MissionDTO> getByAffaireId(Long affaireId) {
-        return missionMapper.toDtoList(missionRepository.findByAffaire_IdAffaire(affaireId));
+        return missionMapper.toDtoList(missionRepository.findByDossier_IdDossier(affaireId));
     }
 
     @Override
@@ -78,7 +81,7 @@ public class MissionServiceImpl implements MissionService {
     public MissionDTO validate(Long id) {
         Mission mission = findMission(id);
         if ("TERMINEE".equals(mission.getStatut()) || "ANNULEE".equals(mission.getStatut())) {
-            throw new com.bna.gac.exceptions.BadRequestException("La mission est déjà terminée ou annulée");
+            throw new BadRequestException("La mission est déjà terminée ou annulée");
         }
         mission.setStatut("TERMINEE");
         return missionMapper.toDto(missionRepository.save(mission));
@@ -88,7 +91,7 @@ public class MissionServiceImpl implements MissionService {
     public MissionDTO reject(Long id, String commentaireRejet) {
         Mission mission = findMission(id);
         if ("TERMINEE".equals(mission.getStatut()) || "ANNULEE".equals(mission.getStatut())) {
-            throw new com.bna.gac.exceptions.BadRequestException("La mission est déjà terminée ou annulée");
+            throw new BadRequestException("La mission est déjà terminée ou annulée");
         }
         mission.setStatut("EN_COURS");
         mission.setCommentaireRejet(commentaireRejet);
@@ -101,19 +104,16 @@ public class MissionServiceImpl implements MissionService {
     }
 
     private Prestataire findPrestataire(Long prestataireId) {
+        if (prestataireId == null) return null;
         return prestataireRepository.findById(prestataireId)
                 .orElseThrow(() -> new ResourceNotFoundException("Prestataire not found"));
     }
 
-    private Affaire findAffaire(Long affaireId) {
-        if (affaireId == null) {
-            throw new com.bna.gac.exceptions.BadRequestException("Une mission doit être liée à une affaire");
+    private DossierContentieux findDossier(Long dossierId) {
+        if (dossierId == null) {
+            throw new BadRequestException("Une mission doit être liée à un dossier");
         }
-        return affaireRepository.findById(affaireId)
-                .orElseThrow(() -> new ResourceNotFoundException("Affaire not found"));
+        return dossierRepository.findById(dossierId)
+                .orElseThrow(() -> new ResourceNotFoundException("Dossier not found"));
     }
 }
-
-
-
-

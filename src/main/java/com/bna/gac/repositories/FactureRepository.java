@@ -17,7 +17,8 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
 
     @Query("SELECT COALESCE(SUM(f.montant), 0) FROM Facture f " +
            "WHERE f.statut = 'PAYEE' " +
-           "AND f.mission.affaire.dossier.idDossier = :dossierId")
+           "AND f.mission.dossier.idDossier = :dossierId")
     Double sumMontantPayeeByDossierId(@Param("dossierId") Long dossierId);
 }
+
 

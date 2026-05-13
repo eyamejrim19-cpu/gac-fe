@@ -18,7 +18,6 @@ public interface AffaireMapper {
 
     @Mapping(source = "dossierId", target = "dossier.idDossier")
     @Mapping(target = "prestataire", ignore = true)
-    @Mapping(target = "missions", ignore = true)
     @Mapping(target = "audiences", ignore = true)
     @Mapping(target = "statut", ignore = true)
     Affaire toEntity(AffaireDTO dto);

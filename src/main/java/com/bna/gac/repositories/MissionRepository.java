@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface MissionRepository extends JpaRepository<Mission, Long> {
     long countByStatut(String statut);
-    List<Mission> findByAffaire_IdAffaire(Long affaireId);
+    List<Mission> findByDossier_IdDossier(Long dossierId);
 }
-

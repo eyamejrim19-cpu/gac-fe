@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -19,13 +20,14 @@ public class Facture {
 
     private String numero;
     private LocalDateTime dateEmission;
+    private LocalDateTime datePaiement;
     private Double montant;
     private String statut;
     private String typeFacture;
+    private String typePaiement;
     private String commentaireRejet;
 
     @ManyToOne
     @JoinColumn(name = "mission_id")
     private Mission mission;
 }
-
