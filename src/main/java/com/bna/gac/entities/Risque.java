@@ -20,6 +20,9 @@ public class Risque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRisque;
 
+    @Column(unique = true)
+    private String reference;
+
     private Double montantPrincipal;
     private Double montantInteret;
     private Double montantTotal;

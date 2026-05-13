@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class RisqueDTO {
 
     private Long id;
+    private String reference;
     private Long dossierId;
 
     private Double montantPrincipal;

@@ -3,15 +3,16 @@ package com.bna.gac.services.impl;
 import com.bna.gac.dto.RisqueDTO;
 import com.bna.gac.entities.DossierContentieux;
 import com.bna.gac.entities.Risque;
-import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.RisqueMapper;
 import com.bna.gac.repositories.DossierContentieuxRepository;
 import com.bna.gac.repositories.RisqueRepository;
 import com.bna.gac.services.RisqueService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,19 +25,46 @@ public class RisqueServiceImpl implements RisqueService {
 
     @Override
     public RisqueDTO create(RisqueDTO dto) {
-        validateRisque(dto);
         Risque risque = mapper.toEntity(dto);
         risque.setDossier(findDossier(dto.getDossierId()));
-        return mapper.toDto(repository.save(risque));
+        // Auto-calculate montantTotal
+        double principal = dto.getMontantPrincipal() != null ? dto.getMontantPrincipal() : 0;
+        double interet   = dto.getMontantInteret()   != null ? dto.getMontantInteret()   : 0;
+        risque.setMontantTotal(principal + interet);
+        Risque saved = repository.save(risque);
+        if (saved.getReference() == null || saved.getReference().isBlank()) {
+            saved.setReference(generateReference(saved.getIdRisque()));
+            saved = repository.save(saved);
+        }
+        return mapper.toDto(saved);
+    }
+
+    /** Runs once on startup — backfills references for any existing risque that has none. */
+    @PostConstruct
+    public void backfillReferences() {
+        List<Risque> all = repository.findAll();
+        for (Risque r : all) {
+            if (r.getReference() == null || r.getReference().isBlank()) {
+                r.setReference(generateReference(r.getIdRisque()));
+                repository.save(r);
+            }
+        }
+    }
+
+    private String generateReference(Long id) {
+        String year = String.valueOf(LocalDate.now().getYear());
+        return "RSQ-" + year + "-" + String.format("%03d", id);
     }
 
     @Override
     public RisqueDTO update(Long id, RisqueDTO dto) {
-        validateRisque(dto);
         Risque risque = findRisque(id);
         risque.setMontantPrincipal(dto.getMontantPrincipal());
         risque.setMontantInteret(dto.getMontantInteret());
-        risque.setMontantTotal(dto.getMontantTotal());
+        // Auto-calculate montantTotal
+        double principal = dto.getMontantPrincipal() != null ? dto.getMontantPrincipal() : 0;
+        double interet   = dto.getMontantInteret()   != null ? dto.getMontantInteret()   : 0;
+        risque.setMontantTotal(principal + interet);
         risque.setTauxInteret(dto.getTauxInteret());
         risque.setPeriode(dto.getPeriode());
         risque.setDateContrat(dto.getDateContrat() == null ? null : dto.getDateContrat().atStartOfDay());
@@ -44,15 +72,6 @@ public class RisqueServiceImpl implements RisqueService {
         risque.setDateEcheance(dto.getDateEcheance() == null ? null : dto.getDateEcheance().atStartOfDay());
         risque.setDossier(findDossier(dto.getDossierId()));
         return mapper.toDto(repository.save(risque));
-    }
-
-    private void validateRisque(RisqueDTO dto) {
-        if (dto.getMontantPrincipal() == null || dto.getMontantInteret() == null || dto.getMontantTotal() == null) {
-            throw new BadRequestException("All financial amounts (principal, interest, total) are required");
-        }
-        if (Math.abs(dto.getMontantPrincipal() + dto.getMontantInteret() - dto.getMontantTotal()) > 0.01) {
-            throw new BadRequestException("Total amount must equal Principal + Interest");
-        }
     }
 
     @Override

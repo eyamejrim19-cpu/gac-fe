@@ -10,8 +10,7 @@ import com.bna.gac.exceptions.BadRequestException;
 import com.bna.gac.exceptions.ResourceNotFoundException;
 import com.bna.gac.mapper.DossierContentieuxMapper;
 import com.bna.gac.repositories.*;
-import com.bna.gac.services.DossierContentieuxService;
-import lombok.RequiredArgsConstructor;
+import com.bna.gac.services.DossierContentieuxService;import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
     private final MissionRepository missionRepository;
     private final FactureRepository factureRepository;
     private final PrestataireRepository prestataireRepository;
+    private final RisqueRepository risqueRepository;
     private final DossierContentieuxMapper mapper;
 
     @Override
@@ -36,19 +36,17 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         DossierContentieux dossier = mapper.toEntity(dto);
         dossier.setClient(findClient(dto.getClientId()));
         dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
-        
         if (dossier.getStatut() == null) {
             dossier.setStatut(DossierStatus.OUVERT);
         }
-        
-        return mapper.toDto(dossierRepository.save(dossier));
+        return toDtoWithAmounts(dossierRepository.save(dossier));
     }
 
     @Override
     @Transactional
     public DossierContentieuxDTO update(Long id, DossierContentieuxDTO dto) {
         DossierContentieux dossier = findDossier(id);
-        
+
         DossierStatus newStatus = dto.getStatut() != null ? DossierStatus.valueOf(dto.getStatut()) : null;
         if (newStatus != null && !newStatus.equals(dossier.getStatut())) {
             validateStatusTransition(dossier.getStatut(), newStatus);
@@ -59,15 +57,14 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         dossier.setDateOuverture(dto.getDateOuverture() == null ? null : dto.getDateOuverture().atStartOfDay());
         dossier.setNiveauRisque(dto.getNiveauRisque());
         dossier.setDateCloture(dto.getDateCloture() == null ? null : dto.getDateCloture().atStartOfDay());
-        dossier.setMontantInitial(dto.getMontantInitial());
-        dossier.setMontantRecupere(dto.getMontantRecupere());
-        
+        // montantInitial and montantRecupere are now calculated — not set from DTO
+
         if (dto.getClientId() != null) {
             dossier.setClient(findClient(dto.getClientId()));
         }
         dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
-        
-        return mapper.toDto(dossierRepository.save(dossier));
+
+        return toDtoWithAmounts(dossierRepository.save(dossier));
     }
 
     private void validateStatusTransition(DossierStatus current, DossierStatus next) {
@@ -78,17 +75,21 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
 
     @Override
     public List<DossierContentieuxDTO> getAll() {
-        return mapper.toDtoList(dossierRepository.findAll());
+        return dossierRepository.findAll().stream()
+                .map(this::toDtoWithAmounts)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
     public List<DossierContentieuxDTO> findRecent(int limit) {
-        return mapper.toDtoList(dossierRepository.findByOrderByIdDossierDesc(PageRequest.of(0, limit)));
+        return dossierRepository.findByOrderByIdDossierDesc(PageRequest.of(0, limit)).stream()
+                .map(this::toDtoWithAmounts)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override
     public DossierContentieuxDTO getById(Long id) {
-        return mapper.toDto(findDossier(id));
+        return toDtoWithAmounts(findDossier(id));
     }
 
     @Override
@@ -108,7 +109,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
             throw new BadRequestException("Le dossier doit être en cours ou en attente de validation pour être validé");
         }
         dossier.setStatut(DossierStatus.VALIDE);
-        return mapper.toDto(dossierRepository.save(dossier));
+        return toDtoWithAmounts(dossierRepository.save(dossier));
     }
 
     @Override
@@ -120,7 +121,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         }
         dossier.setStatut(DossierStatus.EN_COURS);
         dossier.setCommentaireRejet(commentaireRejet);
-        return mapper.toDto(dossierRepository.save(dossier));
+        return toDtoWithAmounts(dossierRepository.save(dossier));
     }
 
     @Override
@@ -154,6 +155,15 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         dto.setPrestatairesActifs(prestataireRepository.countByActif(true));
         dto.setClientsActifs(clientRepository.count());
 
+        return dto;
+    }
+
+    /** Converts entity to DTO and injects calculated financial amounts. */
+    private DossierContentieuxDTO toDtoWithAmounts(DossierContentieux dossier) {
+        DossierContentieuxDTO dto = mapper.toDto(dossier);
+        Long id = dossier.getIdDossier();
+        dto.setMontantInitial(risqueRepository.sumMontantTotalByDossierId(id));
+        dto.setMontantRecupere(factureRepository.sumMontantPayeeByDossierId(id));
         return dto;
     }
 
