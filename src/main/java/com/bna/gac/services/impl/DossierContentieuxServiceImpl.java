@@ -37,6 +37,7 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         DossierContentieux dossier = mapper.toEntity(dto);
         dossier.setClient(findClient(dto.getClientId()));
         dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
+        dossier.setChargeUserId(dto.getChargeDossierId()); // store plain ID
         if (dossier.getStatut() == null) {
             dossier.setStatut(DossierStatus.OUVERT);
         }
@@ -58,12 +59,14 @@ public class DossierContentieuxServiceImpl implements DossierContentieuxService 
         dossier.setDateOuverture(dto.getDateOuverture() == null ? null : dto.getDateOuverture().atStartOfDay());
         dossier.setNiveauRisque(dto.getNiveauRisque());
         dossier.setDateCloture(dto.getDateCloture() == null ? null : dto.getDateCloture().atStartOfDay());
-        // montantInitial and montantRecupere are now calculated — not set from DTO
 
         if (dto.getClientId() != null) {
             dossier.setClient(findClient(dto.getClientId()));
         }
-        dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
+        if (dto.getChargeDossierId() != null) {
+            dossier.setChargeDossier(findChargeDossier(dto.getChargeDossierId()));
+            dossier.setChargeUserId(dto.getChargeDossierId()); // store plain ID
+        }
 
         return toDtoWithAmounts(dossierRepository.save(dossier));
     }

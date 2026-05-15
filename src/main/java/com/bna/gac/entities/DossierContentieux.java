@@ -34,6 +34,10 @@ public class DossierContentieux {
     @JoinColumn(name = "charge_dossier_id")
     private ChargeDossier chargeDossier;
 
+    // Plain user ID stored directly — bypasses SINGLE_TABLE dtype mismatch
+    @Column(name = "charge_user_id")
+    private Long chargeUserId;
+
     @ManyToOne
     @JoinColumn(name = "id_client")
     private Client client;
